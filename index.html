@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- ==========================================================
+         🧭 Meta & PWA Setup — Revolution Trading Room
+         ========================================================== -->
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="description"
+      content="Revolution Trading Room — Real-Time Trading Chat, Alerts, and Live Screen Streams"
+    />
+    <link
+      rel="icon"
+      href="https://images.pexels.com/photos/210607/pexels-photo-210607.jpeg?auto=compress&cs=tinysrgb&w=32"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://images.pexels.com/photos/210607/pexels-photo-210607.jpeg?auto=compress&cs=tinysrgb&w=180"
+    />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ==========================================================
+         🔒 Content Security Policy (CSP) - Development Friendly
+         ========================================================== -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self' http://localhost:* ws://localhost:* wss://localhost:*;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.scdn.co http://localhost:*;
+        worker-src blob: 'self';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: blob: https: http://localhost:*;
+        font-src 'self' data:;
+        connect-src 'self'
+          http://localhost:*
+          http://127.0.0.1:*
+          ws://localhost:*
+          ws://127.0.0.1:*
+          wss://localhost:*
+          https://*.supabase.co
+          wss://*.supabase.co
+          https://api.spotify.com
+          https://accounts.spotify.com
+          wss://*.livekit.cloud
+          https://*.livekit.cloud;
+        media-src blob: data: mediastream:;
+        frame-src 'self' https://sdk.scdn.co https://open.spotify.com;
+      "
+    />
+
+    <!-- ==========================================================
+         🔐 Permissions Policy
+         ========================================================== -->
+    <meta
+      http-equiv="Permissions-Policy"
+      content="microphone=(self), camera=(self), geolocation=(), interest-cohort=()"
+    />
+
+    <!-- ==========================================================
+         ⚙️ Security Headers
+         ========================================================== -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- ==========================================================
+         🚀 Preconnects & DNS Prefetch
+         ========================================================== -->
+    <link rel="preconnect" href="https://ngknerhbcrcwjlxquzsf.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://sdk.scdn.co" crossorigin />
+    <link rel="dns-prefetch" href="https://api.spotify.com" />
+    <link rel="dns-prefetch" href="https://livekit.cloud" />
+
+    <!-- ==========================================================
+         🎨 Font Awesome Icons
+         ========================================================== -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- ==========================================================
+         🎧 Spotify Web Playback SDK Loader (Async + Safe)
+         ========================================================== -->
+    <script>
+      window.__spotifySDK = { loading: false, loaded: false, error: null, startTime: null };
+
+      window.onSpotifyWebPlaybackSDKReady = function () {
+        console.log('✅ [SDK] Spotify Web Playback SDK Ready');
+        window.__spotifySDK.loaded = true;
+        window.__spotifySDK.loading = false;
+        window.__spotifySDK.loadTime = Date.now() - window.__spotifySDK.startTime;
+        window.dispatchEvent(new CustomEvent('spotify-sdk-ready'));
+      };
+
+      (function () {
+        var isWebContainer =
+          window.location.hostname.includes('stackblitz') ||
+          window.location.hostname.includes('webcontainer') ||
+          window.location.hostname.includes('bolt.new');
+
+        if (isWebContainer) {
+          console.warn('⚠️ [SDK] WebContainer environment detected — Spotify SDK may be restricted');
+          window.__spotifySDK.environment = 'webcontainer';
+        }
+
+        window.__spotifySDK.loading = true;
+        window.__spotifySDK.startTime = Date.now();
+
+        var script = document.createElement('script');
+        script.id = 'spotify-sdk';
+        script.src = 'https://sdk.scdn.co/spotify-player.js';
+        script.async = true;
+        script.defer = true;
+
+        script.onerror = function (e) {
+          console.error('❌ [SDK] Failed to load Spotify SDK script:', e);
+          window.__spotifySDK.loading = false;
+          window.__spotifySDK.error = 'Script load failed';
+          window.dispatchEvent(
+            new CustomEvent('spotify-sdk-error', {
+              detail: { error: 'Script load failed', type: 'network' },
+            })
+          );
+        };
+
+        script.onload = function () {
+          console.log('📦 [SDK] Spotify SDK script loaded, awaiting initialization...');
+          setTimeout(function () {
+            if (!window.__spotifySDK.loaded) {
+              console.error('❌ [SDK] Loaded but never initialized');
+              window.__spotifySDK.error = 'Initialization timeout';
+              window.dispatchEvent(
+                new CustomEvent('spotify-sdk-error', {
+                  detail: { error: 'Initialization timeout', type: 'timeout' },
+                })
+              );
+            }
+          }, 15000);
+        };
+
+        document.head.appendChild(script);
+      })();
+    </script>
+
+    <!-- ==========================================================
+         🎨 Inline Critical CSS - Prevents FOUC
+         ========================================================== -->
+    <style>
+      /* Prevent flash of unstyled content */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        background-color: #1a2332; /* background-primary fallback */
+        color: #ffffff; /* text-primary fallback */
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+          Arial, sans-serif;
+      }
+
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      /* Loading spinner fallback */
+      .app-loading {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .app-loading::before {
+        content: '';
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #0078d4;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
+    <title>Revolution Trading Room</title>
+
+    <script>
+      (function bootstrapTheme() {
+        try {
+          var theme = null;
+          var typography = null;
+          try { theme = JSON.parse(localStorage.getItem('theme') || 'null'); } catch {}
+          try { typography = JSON.parse(localStorage.getItem('typography') || 'null'); } catch {}
+
+          var root = document.documentElement;
+          // Apply typography first to stabilize layout metrics before React
+          if (typography && typeof typography === 'object') {
+            if (typography.fontFamily) {
+              root.style.setProperty('--font-heading', typography.fontFamily);
+              root.style.setProperty('--font-body', typography.fontFamily);
+            }
+            if (typography.fontWeightBold) root.style.setProperty('--font-heading-weight', String(typography.fontWeightBold));
+            if (typography.fontWeightNormal) root.style.setProperty('--font-body-weight', String(typography.fontWeightNormal));
+            if (typography.fontSizeBase) root.style.setProperty('--font-base-size', String(typography.fontSizeBase));
+          }
+
+          // Apply colors (does not affect layout metrics significantly)
+          if (theme && theme.colors) {
+            var c = theme.colors;
+            if (c.primary) root.style.setProperty('--color-primary', c.primary);
+            if (c.secondary) root.style.setProperty('--color-secondary', c.secondary);
+            if (c.accent) root.style.setProperty('--color-accent', c.accent);
+            if (c.background) root.style.setProperty('--color-background', c.background);
+            if (c.surface) root.style.setProperty('--color-surface', c.surface);
+            if (c.text) root.style.setProperty('--color-text', c.text);
+            if (c.textSecondary) root.style.setProperty('--color-text-secondary', c.textSecondary);
+            if (c.border) root.style.setProperty('--color-border', c.border);
+          }
+
+          root.setAttribute('data-theme-bootstrap', '1');
+        } catch (e) {
+          // swallow — theme bootstrap is best-effort
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="root">
+      <!-- Fallback loading indicator (removed when React mounts) -->
+      <div class="app-loading"></div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+src/components/chat/utils.ts(150,7): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/components/chat/utils.ts(152,7): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/components/icons/AdminDeleteUsers.tsx(13,11): error TS6196: 'DeletionResult' is declared but never used.
+src/components/icons/CameraWindow.tsx(6,11): error TS2430: Interface 'ExtendedCSSStyleDeclaration' incorrectly extends interface 'CSSStyleDeclaration'.
+  Types of property 'webkitUserSelect' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/components/icons/ChatPanel.tsx(244,5): error TS2322: Type 'AuthUserAdapter | undefined' is not assignable to type '{ avatar_url: string | null; created_at: string | null; display_name: string | null; email: string; id: string; role: "admin" | "host" | "moderator" | "member" | null; updated_at: string | null; } | undefined'.
+  Type 'AuthUserAdapter' is not assignable to type '{ avatar_url: string | null; created_at: string | null; display_name: string | null; email: string; id: string; role: "admin" | "host" | "moderator" | "member" | null; updated_at: string | null; } | undefined'.
+    Type 'AuthUserAdapter' is not assignable to type '{ avatar_url: string | null; created_at: string | null; display_name: string | null; email: string; id: string; role: "admin" | "host" | "moderator" | "member" | null; updated_at: string | null; }'.
+      Types of property 'avatar_url' are incompatible.
+        Type 'string | null | undefined' is not assignable to type 'string | null'.
+          Type 'undefined' is not assignable to type 'string | null'.
+src/components/icons/ChatPanel.tsx(251,5): error TS2322: Type 'AuthUserAdapter | undefined' is not assignable to type '{ avatar_url: string | null; created_at: string | null; display_name: string | null; email: string; id: string; role: "admin" | "host" | "moderator" | "member" | null; updated_at: string | null; } | undefined'.
+  Type 'AuthUserAdapter' is not assignable to type '{ avatar_url: string | null; created_at: string | null; display_name: string | null; email: string; id: string; role: "admin" | "host" | "moderator" | "member" | null; updated_at: string | null; } | undefined'.
+    Type 'AuthUserAdapter' is not assignable to type '{ avatar_url: string | null; created_at: string | null; display_name: string | null; email: string; id: string; role: "admin" | "host" | "moderator" | "member" | null; updated_at: string | null; }'.
+      Types of property 'avatar_url' are incompatible.
+        Type 'string | null | undefined' is not assignable to type 'string | null'.

@@ -1,0 +1,243 @@
+/* ============================================================================
+   THEME VARIABLES - Inspired by Competitor Analysis
+   Microsoft Enterprise Standard with Dual Theme Support
+   ============================================================================ */
+
+:root {
+  /* ========== Base Colors ========== */
+  --dark-gray: #aaa;
+  --darker-gray: #aaa6a6;
+  --gray: #bbb;
+  --light-gray: #ccc;
+  --lighter-gray: #eee;
+  --dark-black: #222;
+  --darker-black: #111;
+  --light-black: #373c42;
+  --lighter-black: #3e444a;
+  --light-green: #1edd6e;
+  --brown: #555;
+  --light-brown: #8c8686;
+  --dark-brown: #4b4b4b;
+  --lighter-blue: #edf2f6;
+  --white: #fff;
+  --black: #000;
+  --yellow: #ff0;
+  --fire-yellow: #f7fd37;
+  --red: #f00;
+  --light-blue: #40e0d0;
+  --transparent-gray: rgba(255, 255, 255, 0.331);
+
+  /* ========== App-Wide Settings ========== */
+  --app-font-family: Arial, Helvetica, sans-serif;
+  --app-link-color: #00bc8c;
+  --avatar-gear-icon-padding: 5px 5.5px;
+
+  /* ========== Navigation ========== */
+  --navbar-color: #fff;
+  --navbar-bg: #000;
+  --sidebar-menu-bg: #000;
+  --sidebar-menu-color: #ccc;
+  --sidebar-menu-active-color: #f7fd37;
+  --sidebar-navItem-border-color: transparent;
+
+  /* ========== Users Panel ========== */
+  --users-color: #fff;
+  --users-border-color: #000;
+  --users-badge-bg-color: #375a7f;
+  --users-badge-color: #fff;
+
+  /* ========== Presenter/Recording ========== */
+  --presenter-noRecording-color: #f7fd37;
+  --presenter-recording-color: #f00;
+  --presenter-area-bg: #111;
+
+  /* ========== Chat/Textarea ========== */
+  --textarea-bg: var(--darker-black);
+  --textarea-color: #eee;
+  --textarea-holder-border-color: #fff;
+  --textarea-holder-btns-color: #bbb;
+  --name-color: #c0d8ed;
+
+  /* ========== Tabs ========== */
+  --tab-active-bg: #222;
+  --tabs-color: #fff;
+  --tabs-border-color: #444;
+  --tabs-dropdown-bg: #323232;
+  --tabs-dropdown-color: #777;
+  --note-tabs-color: #00bc8c;
+  --notes-tabs-bg: #111;
+
+  /* ========== Messages ========== */
+  --msgs-header-color: #ccc;
+  --msgs-header-bg: #111;
+  --msgs-separator-color: #373c42;
+  --msgs-separator-border-color: #373c42;
+  --msgs-separator-bg: #e8e8e8;
+
+  /* ========== Modals ========== */
+  --modal-content-bg-color: #303030;
+  --modal-content-color: #fff;
+  --modal-content-border-color: #444;
+  --modal-tabs-border-color: #444;
+  --modal-active-tab-bg-color: #222;
+  --modal-active-tab-color: #00bc8c;
+  --modal-active-tab-border-color: #444;
+  --modal-btn-hover-opacity: 0.9;
+  --modal-btn-close-bg: #375a7f;
+  --modal-btn-close-border: #375a7f;
+  --modal-btn-success-bg: #00bc8c;
+  --modal-btn-success-border: #00bc8c;
+  --modal-btn-danger-bg: #e74c3c;
+  --modal-btn-danger-border: #e74c3c;
+  --modal-input-group-bg: #444;
+  --modal-upload-files-color: #555;
+  --modal-alert-link-color: #00bc8c;
+
+  /* ========== Files ========== */
+  --file-download-bg: #00bc8c;
+  --file-delete-bg: #e74c3c;
+  --file-see-more-bg: #375a7f;
+  --file-list-odd-bg: #fff;
+  --file-list-even-bg: #f4f4f4;
+  --file-name-color: #333;
+  --file-size-color: #b2b2b2;
+  --file-searchbar-color: #b7b7b7;
+  --file-searchbar-icon-color: #666666;
+  --file-searchbar-bg: #fff;
+
+  /* ========== Notes ========== */
+  --note-download-bg: #00bc8c;
+  --note-delete-bg: #e74c3c;
+  --note-next-bg: #375a7f;
+  --note-options-color: #fff;
+  --note-options-hover-color: #ccc;
+  --note-options-bg: #111;
+  --note-text-bg: #222;
+  --note-text-color: #ccc;
+
+  /* ========== Misc ========== */
+  --split-gutter-bg: #000;
+  --split-gutter-color: #fff;
+  --checkbox-bg-color: #00bc8c;
+  --search-icon-bg-color: #adb5bd;
+  --search-icon-color: #222;
+  --reload-icon-bg-color: #00bc8c;
+  --reload-icon-color: #fff;
+  --ptr-website-link-color: #00bc8c;
+  --mobileApp-info-bg-color: transparent;
+  --mobileApp-info-color: #676767;
+  --rosterImg-border-radius: 0;
+  --archives-dropdown-menu-bg-color: #fff;
+  --archives-dropdown-menu-color: #222222;
+  --session-control-dropdown-bg: #222;
+  --dropdown-divider-bg: #e9ecef;
+}
+
+/* ============================================================================
+   LIGHT THEME
+   ============================================================================ */
+[data-theme='light'] {
+  --msg-bg: #d9d9d9;
+  --msg-border-color: #d9d9d9;
+  --date-color: #8394a9;
+  --msg-color: #1a1a1a;
+  --username-color: #000;
+  --msgs-bg: #f1f1f1;
+  --roster-bg: #f1f1f1;
+  --msgs-bg-adm: #e1e1e1;
+  --roster-bg-adm: #e1e1e1;
+  --textarea-color: #555;
+  --textarea-bg: #fff;
+  --user-location-color: #676767;
+  --sidebar-wrapper-bg-color: #fff;
+  --sidebar-wrapper-color: #676767;
+  --nickname-color: #676767;
+  --mobileApp-info-color: #676767;
+  --msgs-separator-color: #373c42;
+  --msgs-separator-border-color: #373c42;
+  --msgs-separator-bg: #e8e8e8;
+  --chat-bg: #eee;
+}
+
+/* ============================================================================
+   DARK THEME (Default)
+   ============================================================================ */
+[data-theme='dark'] {
+  --msg-bg: #000;
+  --msg-border-color: #393939;
+  --date-color: #8394a9;
+  --msg-color: #f7fd37;
+  --msgs-bg: #111;
+  --roster-bg: #111;
+  --msgs-bg-adm: #000;
+  --roster-bg-adm: #000;
+  --username-color: #c0d8ed;
+  --textarea-color: #eee;
+  --textarea-bg: #111;
+  --user-location-color: #f7fd37;
+  --sidebar-wrapper-bg-color: #000;
+  --sidebar-wrapper-color: #f4f4f4;
+  --nickname-color: #c0d8ed;
+  --mobileApp-info-color: #f4f4f4;
+  --msgs-separator-color: #aaa;
+  --msgs-separator-border-color: #373c42;
+  --msgs-separator-bg: #222;
+  --chat-bg: #000;
+}
+
+/* ============================================================================
+   GLOBAL LAYOUT - Competitor Pattern
+   ============================================================================ */
+html,
+body {
+  height: 100% !important;
+  overflow: hidden !important;
+  background-color: var(--chat-bg, #000);
+}
+
+body {
+  box-sizing: border-box;
+  font-weight: 300;
+  font-family: var(--app-font-family);
+  min-height: 100vh !important;
+  min-height: -webkit-fill-available !important;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: -webkit-fill-available !important;
+}
+
+/* Mobile optimization */
+@media only screen and (max-width: 600px) {
+  html,
+  body {
+    overflow: hidden !important;
+  }
+
+  body {
+    min-height: 100vh !important;
+    min-height: -webkit-fill-available !important;
+  }
+
+  html {
+    height: -webkit-fill-available !important;
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app-link {
+  color: var(--app-link-color);
+  text-decoration: none;
+}
+
+.app-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,22 @@
+# Security Headers for Production Deployment
+# Compatible with: Netlify, Vercel, Cloudflare Pages
+
+# Apply to HTML files
+/*.html
+  # Content Security Policy (matches index.html)
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://sdk.scdn.co; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' http://127.0.0.1:* ws://127.0.0.1:* https://*.supabase.co wss://*.supabase.co https://api.spotify.com https://accounts.spotify.com wss://*.livekit.cloud https://*.livekit.cloud; media-src blob: data:; frame-src 'self' https://sdk.scdn.co https://open.spotify.com;
+  
+  # Permissions Policy
+  Permissions-Policy: microphone=(self), camera=(self), geolocation=(), interest-cohort=()
+
+# Apply security headers to all routes/files
+/*
+  # Additional Security Headers
+  # Microsoft Security Headers - Enterprise Standard
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(self), camera=(self), payment=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.clarity.ms; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.livekit.cloud https://www.clarity.ms-origin

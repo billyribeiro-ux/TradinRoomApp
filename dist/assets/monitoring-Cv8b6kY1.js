@@ -1,0 +1,2 @@
+import{_ as l}from"./index-aiAeo93t.js";const t=o=>{console.log("📊 Web Vital (Production):",o)},s=()=>{typeof window<"u"&&l(async()=>{const{onCLS:o,onINP:n,onFCP:i,onLCP:e,onTTFB:a}=await import("./web-vitals-D8cA-W4R.js");return{onCLS:o,onINP:n,onFCP:i,onLCP:e,onTTFB:a}},[]).then(({onCLS:o,onINP:n,onFCP:i,onLCP:e,onTTFB:a})=>{o(t),n(t),i(t),e(t),a(t)}).catch(o=>{console.warn("Failed to load web-vitals:",o)})};export{s as initializeWebVitals,t as logWebVitals};
+//# sourceMappingURL=monitoring-Cv8b6kY1.js.map

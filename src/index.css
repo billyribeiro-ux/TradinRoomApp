@@ -1,0 +1,1364 @@
+@import './styles/theme-variables.css';
+
+/* -------------------------------------------------------------------------
+  Tailwind layer directives restored for E2E build compatibility.
+  We suppress stylelint's unknown at-rule warnings locally. The project
+  previously removed these to silence lint errors, but Playwright/Vite
+  postcss pipeline expects them when encountering `@layer components`.
+  ---------------------------------------------------------------------- */
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
+
+/* ============================================================
+  🎨 Revolution Trading Room — Fluent Hybrid Global Stylesheet
+  ------------------------------------------------------------
+  • Tailwind layers
+  • Fluent color/typography/motion tokens
+  • Device profile scaling (iMac 24" base)
+  • Resizer system (vertical 14px, horizontal via var)
+  • Theme panel lock + blur/scrollbars
+  • Typography variables (from TypographySettings)
+  • Accent gradient helpers (from AccentGradientSettings)
+  • Wave animation + utilities
+=============================================================== */
+
+/* Force LTR text direction for contentEditable elements (scoped to NotesView) */
+[data-testid="notes-view"] .force-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
+/* Scope LTR rules to the NotesView editor context only */
+[data-testid="notes-view"] [contenteditable="true"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
+/* Even more specific rule (scoped) */
+[data-testid="notes-view"] div[contenteditable="true"].force-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
+/* Ultra aggressive rules removed to reduce !important usage; rely on #notes-editor and inline styles */
+
+/* Override any RTL from Fluent UI (scoped) */
+[data-testid="notes-view"] [dir="rtl"] [contenteditable="true"],
+[data-testid="notes-view"] [dir="rtl"] .force-ltr {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  text-align: left !important;
+  writing-mode: horizontal-tb !important;
+}
+
+/* Reset contentEditable (scoped) */
+[data-testid="notes-view"] [contenteditable="true"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+  writing-mode: horizontal-tb;
+  text-align-last: left;
+  text-anchor: start;
+}
+
+/* Ultra-specific rule removed to reduce specificity and !important duplication */
+
+/* ID-specific rule for maximum specificity */
+#notes-editor {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  text-align: left !important;
+  writing-mode: horizontal-tb !important;
+  text-align-last: left !important;
+  text-anchor: start !important;
+}
+
+#notes-editor[contenteditable="true"] {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  text-align: left !important;
+  writing-mode: horizontal-tb !important;
+  text-align-last: left !important;
+  text-anchor: start !important;
+}
+
+/* Comprehensive selector group removed; rely on simpler scoped rules and #notes-editor */
+
+/* Remove global LTR forcing; rely on scoped rules above and component inline styles */
+
+/* Theme Variables - imported at top to satisfy PostCSS */
+
+/* ============================================================================
+   WHITEBOARD FOCUS STYLES - No Orange Borders
+   ============================================================================ */
+
+/* Remove ALL default focus outlines globally - NO ORANGE BORDERS */
+*:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove browser default focus indicators completely */
+*:focus,
+*:active,
+*:focus-within {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Show focus rings ONLY on keyboard navigation with blue color */
+*:focus-visible {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+/* Whiteboard-specific focus styles - NO ORANGE */
+.wb-emoji-picker button:focus:not(:focus-visible),
+.wb-emoji-grid button:focus:not(:focus-visible),
+.wb-emoji-handle:focus:not(:focus-visible),
+.wb-toolbar button:focus:not(:focus-visible),
+.wb-text-editor:focus:not(:focus-visible),
+canvas:focus:not(:focus-visible),
+[data-whiteboard]:focus:not(:focus-visible),
+[data-whiteboard] *:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Suppress Firefox inner focus borders and orange focus ring completely */
+button::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="checkbox"]::-moz-focus-inner,
+input[type="radio"]::-moz-focus-inner {
+  border: 0 !important;
+  outline: none !important;
+}
+
+button:-moz-focusring,
+[role="button"]:-moz-focusring,
+input:-moz-focusring,
+select:-moz-focusring,
+canvas:-moz-focusring {
+  outline: none !important;
+}
+
+/* Generic: don't show outline on mouse focus, keep it for keyboard via :focus-visible */
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+canvas:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+div:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Touch action for transform handles */
+.wb-emoji-transforming,
+.wb-text-transforming {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Presenter-only elements (not recorded) */
+.wb-presenter-only {
+  pointer-events: auto;
+}
+
+/* ============================================================================
+   BOOTSTRAP NAV-TABS - EXACT COMPETITOR STYLING
+   ============================================================================ */
+
+/* Nav tabs container */
+.nav-tabs {
+  border-bottom: 1px solid #444;
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+/* Nav item */
+.nav-item {
+  margin-bottom: -1px;
+}
+
+/* Nav link base */
+.nav-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  text-decoration: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+/* Nav link hover */
+.nav-link:hover,
+.nav-link:focus {
+  color: #00bc8c;
+  isolation: isolate;
+}
+
+/* Nav link disabled */
+.nav-link.disabled,
+.nav-link:disabled {
+  color: #999;
+  pointer-events: none;
+  cursor: default;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* Nav tabs specific link styling */
+.nav-tabs .nav-link {
+  margin-bottom: -1px;
+  background: none;
+  border: 1px solid transparent;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+/* Nav tabs link hover */
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+  border-color: transparent;
+  isolation: isolate;
+}
+
+/* Nav tabs link disabled */
+.nav-tabs .nav-link.disabled,
+.nav-tabs .nav-link:disabled {
+  color: #999;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* ACTIVE TAB - Light blue underline */
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  color: #00bc8c;
+  background-color: #222;
+  border-color: #444 #444 #222;
+  border-bottom: 2px solid #3498DB;
+}
+
+/* Chat tabs specific */
+.chatTabs {
+  flex-grow: 1;
+  justify-content: center;
+}
+
+/* Flex utilities */
+.flex-wrap {
+  flex-wrap: wrap !important;
+}
+
+.flex-grow-1 {
+  flex-grow: 1 !important;
+}
+
+.justify-content-center {
+  justify-content: center !important;
+}
+
+/* Tailwind base layers (expanded to satisfy linters lacking Tailwind plugin) */
+/* If Tailwind is properly configured, you can revert to @tailwind directives. */
+/* BEGIN TAILWIND FALLBACK */
+/* Base reset placeholder */
+/* stylelint-disable */
+html, body { margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; }
+/* Components layer placeholder */
+.container { width: 100%; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+/* Utilities layer minimal subset */
+.flex { display: flex; }
+.hidden { display: none !important; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.text-center { text-align: center; }
+.absolute { position: absolute; }
+.relative { position: relative; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+/* stylelint-enable */
+/* END TAILWIND FALLBACK */
+
+/* ============================================================
+   📱 TradingRoom Container-Query Responsive Add-on
+   — Universal responsiveness via container queries (no device hard-coding)
+=============================================================== */
+@layer components {
+  /* Enable container queries on the Trading Room root */
+  [data-trading-room]{
+    container-type: inline-size;
+    container-name: tradingroom;
+    height: 100vh;
+  }
+  @supports (height: 100dvh){
+    [data-trading-room]{ height: 100dvh; }
+  }
+
+  /* Sensible default tokens (JS will override when available) */
+  [data-trading-room]{
+    --panel-width: clamp(260px, 32vw, 880px);
+    --alert-height: clamp(120px, 28vh, 50vh);
+  }
+
+  /* Tab bar: scrollable when it overflows (no visual change) */
+  [data-trading-room] [role="tablist"]{
+    display: flex;
+    overflow-x: auto;
+    gap: .5rem;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+  }
+  [data-trading-room] [role="tab"]{
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  /* Touch-friendly resizers (optional: add these classNames to your handles) */
+  @media (pointer: coarse){
+    [data-trading-room] .resize-handle-vertical,
+    [data-trading-room] .resize-handle-horizontal{
+      touch-action: none;
+    }
+  }
+
+  /* Keep floating controls off notches/home indicators */
+  [data-trading-room] .fixed.bottom-4.right-4{
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
+    padding-right:  calc(16px + env(safe-area-inset-right, 0));
+  }
+
+  /* ---------- Container-query breakpoints (universal, no device hard-coding) ---------- */
+
+  /* Tablet & down: modest compaction */
+  @container tradingroom (max-width: 900px){
+    [data-trading-room] .fluent-tab{ padding-inline: .75rem; font-size: .95rem; }
+  }
+
+  /* Small tablet / large phones */
+  @container tradingroom (max-width: 768px){
+    [data-trading-room] .fluent-tab{ padding-inline: .5rem; font-size: .9rem; }
+    [data-trading-room] [aria-label="Trading Alerts"]{ min-height: 100px; }
+  }
+
+  /* Phones: stacky, roomy tap targets (visuals unchanged) */
+  @container tradingroom (max-width: 640px){
+    [data-trading-room]{ --panel-width: 100%; }
+    [data-trading-room] [role="tablist"]{ gap: .25rem; }
+  }
+
+  /* Very small containers: compact dialogs */
+  @container tradingroom (max-width: 480px){
+    [data-trading-room] .modal,
+    [data-trading-room] [role="dialog"]{
+      width: 92cqw;
+      max-width: 92cqw;
+      max-height: 90cqh;
+    }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    [data-trading-room] *{
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+/* ============================================================
+   🧱 Root Fluent Theme Variables (dynamic: updated by ThemeSettings)
+=============================================================== */
+:root {
+  /* Core palette (overridden live by ThemeSettingsPanel/useThemeStore) */
+  --color-bg-primary: #0f172a;     /* slate-900 */
+  --color-bg-secondary: #1e293b;   /* slate-800 */
+  --color-bg-accent: #2563eb;      /* blue-600 */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+
+  /* Accent gradient (configurable via AccentGradientSettings) */
+  --accent-grad-start: #2563eb;
+  --accent-grad-end:   #60a5fa;
+
+  /* Radii & Shadows */
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --shadow-elevate: 0 4px 12px rgba(0,0,0,0.4);
+
+  /* Blur & Motion */
+  --blur-bg: blur(10px);
+  --fluent-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --fluent-fast: 150ms var(--fluent-ease);
+  --fluent-medium: 250ms var(--fluent-ease);
+  --fluent-slow: 400ms var(--fluent-ease);
+
+  /* ==========================================================
+     📐 Layout Tokens — iMac 24" Base → Scaled per device
+     These are read by components and/or JS resizing.
+  ========================================================== */
+  /* Base reference scale = 1.0 for iMac 24" */
+  --device-scale: 1;
+
+  /* Panel (left overlay) widths (used by TradingRoom + JS) */
+  --panel-min: 400px;
+  --panel-max: 800px;
+  --panel-default: 600px;
+
+  /* Alerts block height targets (used by TradingRoom + JS) */
+  --alerts-min: 250px;
+  --alerts-max: 400px;
+
+  /* Header + row heights (your hard requirements, scaled) */
+  --header-height: calc(50px * var(--device-scale));      /* alerts header */
+  --alert-item-height: calc(60px * var(--device-scale));  /* alert rows */
+
+  /* Resizer dimensions */
+  --vertical-resizer-hit: 14px;                 /* full hit area */
+  --vertical-resizer-handle: 6px;               /* visual bar */
+  --horizontal-resizer-height: 8px;             /* can be overridden */
+
+  /* Typography vars (TypographySettings updates these) */
+  --font-heading: Inter, system-ui, -apple-system, sans-serif;
+  --font-body: Inter, system-ui, -apple-system, sans-serif;
+  --font-heading-weight: 700;
+  --font-body-weight: 400;
+  --font-base-size: 16px;
+  /* Global theme opacity (0–1), controlled via ThemeOpacityControl */
+  --theme-opacity: 1;
+}
+
+/* ============================================================
+   📏 Container Queries & Clamp() Tokens
+   — Responsive sizing driven by actual container width
+=============================================================== */
+[data-trading-room] {
+  container-type: inline-size;
+  /* Define clamp() tokens for panel and alert heights */
+  --panel-width: clamp(260px, 32vw, 880px);
+  --alert-height: clamp(120px, 28vh, 50vh);
+}
+
+/* Container queries for responsive adjustments */
+@container (max-width: 768px) {
+  [data-trading-room] {
+    --panel-width: clamp(240px, 40vw, 520px);
+    --alert-height: clamp(100px, 34vh, 48vh);
+  }
+}
+
+@container (max-width: 480px) {
+  [data-trading-room] {
+    --panel-width: 100%; /* Full width on tiny screens */
+  }
+}
+
+/* Scrollable tabs for narrow widths */
+[role="tablist"] {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  gap: 0.5rem;
+  padding-bottom: 2px; /* Space for scrollbar */
+}
+
+[role="tab"] {
+  flex: 0 0 auto; /* Don't shrink tab labels */
+  min-width: 44px; /* Touch target minimum */
+  min-height: 44px;
+}
+
+/* Touch optimizations for resize handles */
+.resize-handle-vertical,
+.resize-handle-horizontal {
+  touch-action: none;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Mobile safe-area insets for iOS */
+.footer-controls,
+.bottom-controls {
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+/* Use dvh units for mobile to avoid iOS address bar issues */
+@media (max-width: 768px) {
+  body,
+  html,
+  .h-screen {
+    height: 100dvh;
+  }
+}
+
+/* ============================================================
+   🖥️ Device Profile Scaling (approximate MS device ranges)
+   — adjusts scale + default panel/alerts targets
+=============================================================== */
+@media (min-width: 2560px) and (min-height: 1440px) { /* iMac 27" */
+  :root {
+    --device-scale: 1.15;
+    --panel-min: 500px;
+    --panel-max: 1000px;
+    --panel-default: 740px;
+    --alerts-min: 300px;
+    --alerts-max: 500px;
+  }
+}
+
+@media (min-width: 1920px) and (min-height: 1080px) { /* iMac 24" (base) */
+  :root {
+    --device-scale: 1.0;
+    --panel-min: 400px;
+    --panel-max: 800px;
+    --panel-default: 600px;
+    --alerts-min: 250px;
+    --alerts-max: 400px;
+  }
+}
+
+@media (max-width: 1536px) and (min-width: 1366px) { /* Laptop - standard */
+  :root {
+    --device-scale: 0.9;
+    --panel-min: 320px;
+    --panel-max: 640px;
+    --panel-default: 480px;
+    --alerts-min: 200px;
+    --alerts-max: 320px;
+  }
+}
+
+@media (max-width: 1024px) { /* Tablet */
+  :root {
+    --device-scale: 0.85;
+    --panel-min: 280px;
+    --panel-max: 520px;
+    --panel-default: 380px;
+    --alerts-min: 180px;
+    --alerts-max: 300px;
+  }
+}
+
+@media (max-width: 768px) { /* Mobile */
+  :root {
+    --device-scale: 0.8;
+    --panel-min: 220px;
+    --panel-max: 420px;
+    --panel-default: 300px;
+    --alerts-min: 140px;
+    --alerts-max: 220px;
+  }
+}
+
+/* ============================================================
+   📱 Typography — Responsive & Fluent
+=============================================================== */
+html {
+  font-family: var(--font-body);
+  font-size: var(--font-base-size);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  scroll-behavior: smooth;
+}
+
+/* Apply global theme opacity to the app root */
+#root { opacity: var(--theme-opacity); }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  color: var(--color-text-primary);
+  letter-spacing: -0.015em;
+}
+
+p, span, small, li, input, button, select, textarea {
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   🔳 Panels, Cards, and Surfaces
+=============================================================== */
+.panel,
+.card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevate);
+  transition: transform var(--fluent-medium), border-color var(--fluent-medium), box-shadow var(--fluent-medium);
+}
+
+.panel:hover,
+.card:hover {
+  border-color: var(--color-bg-accent);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   🧩 Resizer Handles — Hybrid Fluent (matches your components)
+=============================================================== */
+.resize-handle-vertical {
+  position: relative;
+  width: var(--vertical-resizer-hit);
+  cursor: col-resize;
+  background: transparent;
+  transition: background-color var(--fluent-fast);
+}
+
+.resize-handle-vertical::before {
+  /* visual bar centered inside the hit area */
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc((var(--vertical-resizer-hit) - var(--vertical-resizer-handle)) / 2);
+  width: var(--vertical-resizer-handle);
+  background-color: var(--color-border);
+  transition: background-color var(--fluent-fast), box-shadow var(--fluent-fast);
+}
+
+.resize-handle-vertical:hover::before,
+.resize-handle-vertical:focus-visible::before {
+  background-color: var(--color-bg-accent);
+  box-shadow: 0 0 8px var(--color-bg-accent);
+}
+
+.resize-handle-horizontal {
+  position: relative;
+  height: var(--horizontal-resizer-height);
+  cursor: row-resize;
+  background: transparent;
+}
+
+.resize-handle-horizontal::before {
+  /* visual bar (thin) */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc((var(--horizontal-resizer-height) - 4px) / 2);
+  height: 4px;
+  background-color: var(--color-border);
+  transition: background-color var(--fluent-fast), box-shadow var(--fluent-fast);
+}
+
+.resize-handle-horizontal:hover::before,
+.resize-handle-horizontal:focus-visible::before {
+  background-color: var(--color-bg-accent);
+  box-shadow: 0 0 8px var(--color-bg-accent);
+}
+
+/* ============================================================
+   🧭 Alerts / Chat Heights — structural helpers
+   (Components can read these vars; CSS here provides defaults)
+=============================================================== */
+.alerts-header {
+  height: var(--header-height);
+}
+
+.alert-item {
+  height: var(--alert-item-height);
+}
+
+/* ============================================================
+   🌬️ Blur Layers & Theme Transitions
+=============================================================== */
+.theme-preview-blur {
+  backdrop-filter: var(--blur-bg);
+  -webkit-backdrop-filter: var(--blur-bg);
+  transition: backdrop-filter var(--fluent-medium), background-color var(--fluent-medium);
+}
+
+.theme-transition {
+  transition: all var(--fluent-slow);
+}
+
+/* ============================================================
+   🔊 Sound Indicator (optional visual feedback)
+=============================================================== */
+.sound-indicator {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 0.5rem 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  box-shadow: var(--shadow-elevate);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--fluent-medium);
+}
+.sound-indicator.active { opacity: 1; }
+
+/* ============================================================
+   ⚡ Wave Animation — Status / Audio Pulse
+=============================================================== */
+@keyframes wave { 0%, 100% { height: 8px; } 50% { height: 24px; } }
+.animate-wave { animation: wave 1s ease-in-out infinite; }
+
+/* ============================================================
+   🎛️ Preview / Floating Controls (HUD & panels)
+=============================================================== */
+.preview-settings-panel {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevate);
+}
+
+.preview-toggle-btn {
+  background: var(--color-bg-accent);
+  color: #fff;
+  border-radius: 9999px;
+  transition: transform var(--fluent-fast), background-color var(--fluent-fast);
+}
+.preview-toggle-btn:hover {
+  background: #1d4ed8; /* blue-700 */
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   🧠 Accessibility & Focus States
+=============================================================== */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-bg-accent);
+  outline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-bg-accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   🖱️ Fluent Scrollbars + Blur Consistency
+=============================================================== */
+* {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+aside::-webkit-scrollbar,
+.panel::-webkit-scrollbar,
+.card::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+aside::-webkit-scrollbar-thumb,
+.panel::-webkit-scrollbar-thumb,
+.card::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(59,130,246,0.6), rgba(37,99,235,0.4));
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+aside::-webkit-scrollbar-thumb:hover,
+.panel::-webkit-scrollbar-thumb:hover,
+.card::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, rgba(59,130,246,0.9), rgba(37,99,235,0.7));
+}
+
+/* Consistent heavy blur backgrounds (drawer/header surfaces) */
+.backdrop-blur-xl,
+.backdrop-blur-2xl {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  background-color: rgba(15, 23, 42, 0.85);
+  transition: backdrop-filter 0.4s ease, background-color 0.4s ease;
+}
+
+/* Focus aura inside drawers */
+aside:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6);
+}
+
+/* ============================================================
+   ✨ Theme Panel Overlay Lock (used by ThemeSettingsPanel)
+=============================================================== */
+body.theme-panel-open {
+  overflow: hidden;
+  pointer-events: none;
+}
+body.theme-panel-open aside {
+  pointer-events: auto;
+}
+
+/* ============================================================
+   🎨 Accent Gradient Utilities
+=============================================================== */
+.accent-gradient-bg {
+  background: linear-gradient(135deg, var(--accent-grad-start), var(--accent-grad-end));
+}
+
+.accent-gradient-text {
+  background: linear-gradient(135deg, var(--accent-grad-start), var(--accent-grad-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-accent {
+  box-shadow: 0 0 12px rgba(37,99,235,0.6);
+  transition: box-shadow var(--fluent-fast);
+}
+.glow-accent:hover { box-shadow: 0 0 20px rgba(37,99,235,0.9); }
+
+/* Optional glass gradient */
+.blur-xl-gradient {
+  background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(15,23,42,0.9));
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* ============================================================
+   🧯 Reduced Motion Support
+=============================================================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   🧪 Debug Helpers (optional; comment out in prod)
+=============================================================== */
+/*
+.debug-outline * { outline: 1px solid rgba(0,255,255,0.15); }
+*//* ============================================================
+   🧱 Root Fluent Theme Variables
+=============================================================== */
+:root {
+  /* Core palette */
+  --color-bg-primary: #0f172a; /* slate-900 */
+  --color-bg-secondary: #1e293b; /* slate-800 */
+  --color-bg-accent: #2563eb; /* blue-600 */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+
+  /* Radii & Shadows */
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --shadow-elevate: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  /* Blur & Transitions */
+  --blur-bg: blur(8px);
+  --transition-speed: 0.3s;
+
+  /* Fluent Motion Variables */
+  --fluent-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --fluent-fast: 150ms var(--fluent-ease);
+  --fluent-medium: 250ms var(--fluent-ease);
+  --fluent-slow: 400ms var(--fluent-ease);
+}
+
+/* ============================================================
+   📱 Typography — Responsive & Fluent
+=============================================================== */
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: -0.015em;
+}
+
+p, span, small, li {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   🔳 Panels, Cards, and Surfaces
+=============================================================== */
+.panel,
+.card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevate);
+  transition: all var(--fluent-medium);
+}
+
+.panel:hover,
+.card:hover {
+  border-color: var(--color-bg-accent);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   🧩 Resize Handles — Hybrid Fluent
+=============================================================== */
+.resize-handle-vertical {
+  width: 5px;
+  background-color: var(--color-border);
+  cursor: col-resize;
+  transition: background-color var(--fluent-fast), box-shadow var(--fluent-fast);
+}
+
+.resize-handle-horizontal {
+  height: 5px;
+  background-color: var(--color-border);
+  cursor: row-resize;
+  transition: background-color var(--fluent-fast), box-shadow var(--fluent-fast);
+}
+
+.resize-handle-vertical:hover,
+.resize-handle-horizontal:hover {
+  background-color: var(--color-bg-accent);
+  box-shadow: 0 0 8px var(--color-bg-accent);
+}
+
+/* ============================================================
+   🌬️ Blur Layers & Theme Transitions
+=============================================================== */
+.theme-preview-blur {
+  backdrop-filter: var(--blur-bg);
+  transition: backdrop-filter var(--fluent-medium);
+}
+
+.theme-transition {
+  transition: all var(--fluent-slow);
+}
+
+/* ============================================================
+   🔊 Sound Indicator (optional visual feedback)
+=============================================================== */
+.sound-indicator {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 0.5rem 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  box-shadow: var(--shadow-elevate);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--fluent-medium);
+}
+
+.sound-indicator.active {
+  opacity: 1;
+}
+
+/* ============================================================
+   ⚡ Wave Animation — Status / Audio Pulse
+=============================================================== */
+@keyframes wave {
+  0%, 100% { height: 8px; }
+  50% { height: 24px; }
+}
+
+.animate-wave {
+  animation: wave 1s ease-in-out infinite;
+}
+
+/* ============================================================
+   🎛️ Preview Settings Panel / Floating Button
+=============================================================== */
+.preview-settings-panel {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevate);
+}
+
+.preview-toggle-btn {
+  background: var(--color-bg-accent);
+  color: #fff;
+  border-radius: 9999px;
+  transition: all var(--fluent-fast);
+}
+
+.preview-toggle-btn:hover {
+  background: #1d4ed8; /* blue-700 */
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   🧠 Accessibility & Focus States
+=============================================================== */
+button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid var(--color-bg-accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   🖱️ Fluent Scrollbars + Blur Consistency
+=============================================================== */
+* {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+aside::-webkit-scrollbar,
+.panel::-webkit-scrollbar,
+.card::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+aside::-webkit-scrollbar-thumb,
+.panel::-webkit-scrollbar-thumb,
+.card::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    to bottom,
+    rgba(59, 130, 246, 0.6),
+    rgba(37, 99, 235, 0.4)
+  );
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+aside::-webkit-scrollbar-thumb:hover,
+.panel::-webkit-scrollbar-thumb:hover,
+.card::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    to bottom,
+    rgba(59, 130, 246, 0.9),
+    rgba(37, 99, 235, 0.7)
+  );
+}
+
+.backdrop-blur-xl,
+.backdrop-blur-2xl {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  background-color: rgba(15, 23, 42, 0.85);
+  transition: backdrop-filter 0.4s ease, background-color 0.4s ease;
+}
+
+/* Add gentle slide/opacity for focus within drawers */
+aside:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6);
+}
+
+/* ============================================================
+   ✨ Theme Panel Overlay Lock
+=============================================================== */
+/* ORIGINAL - Only supports aside elements
+body.theme-panel-open {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+body.theme-panel-open aside {
+  pointer-events: auto;
+}
+*/
+
+/* FIX: Support both aside and fixed modals */
+body.theme-panel-open {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+body.theme-panel-open aside,
+body.theme-panel-open > div.fixed,
+body.theme-panel-open > div.fixed * {
+  pointer-events: auto;
+}
+/* ----------------------------------------------------------
+   🌈 Fluent HUD + Drawer Interaction States
+   Triggered when body has .theme-panel-open
+---------------------------------------------------------- */
+
+/* When the Theme Panel is open */
+body.theme-panel-open {
+  /* Optional subtle backdrop dim for the whole app */
+  background-color: rgba(0, 0, 0, 0.4);
+  transition: background-color 0.4s ease-in-out;
+}
+
+/* ----------------------------------------------------------
+   ✨ Floating HUD Glow (bottom-right toolbar)
+---------------------------------------------------------- */
+body.theme-panel-open .theme-preview-hud {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.7),
+              0 0 40px rgba(59, 130, 246, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  transition: all 0.4s ease-in-out;
+}
+
+/* Inner buttons on HUD become brighter */
+body.theme-panel-open .theme-preview-hud button {
+  background-color: rgba(37, 99, 235, 0.85);
+  color: #fff;
+  transform: translateY(-1px);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Restore normal look when panel closes */
+body:not(.theme-panel-open) .theme-preview-hud {
+  transform: scale(1);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease-in-out;
+}
+
+/* ----------------------------------------------------------
+   🧊 Optional: Animated Backdrop Layer
+---------------------------------------------------------- */
+body.theme-panel-open::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  backdrop-filter: blur(6px);
+  background: rgba(15, 23, 42, 0.25);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+body:not(.theme-panel-open)::after {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* ============================================================
+   🧩 Utility Helpers
+=============================================================== */
+.blur-xl-gradient {
+  background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(15,23,42,0.9));
+  backdrop-filter: blur(12px);
+}
+
+.glow-accent {
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
+  transition: box-shadow var(--fluent-fast);
+}
+
+.glow-accent:hover {
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.9);
+}
+
+ 
+/* ----------------------------------------------------------
+   💡 Copy Tooltip Fade Animation
+---------------------------------------------------------- */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.animate-fadeOut {
+  animation: fadeOut 1s ease forwards;
+}
+
+/* ============================================================
+   🎬 Modal Header Top Border Line Animation
+   — Slides down from top on modal open
+=============================================================== */
+@keyframes slideDown {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left;
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Remove all default focus outlines and borders to prevent flickering */
+button:focus,
+button:active,
+button:focus-visible,
+input:focus,
+input:active,
+input:focus-visible,
+select:focus,
+select:active,
+select:focus-visible,
+textarea:focus,
+textarea:active,
+textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
+
+/* Remove webkit tap highlight */
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ----------------------------------------------------------
+   ✨ Fluent Glow Animation (already present)
+---------------------------------------------------------- */
+@keyframes themeGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6),
+                0 0 40px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.9),
+                0 0 60px rgba(59, 130, 246, 0.5);
+  }
+}
+.animate-themeGlow {
+  animation: themeGlow 3s ease-in-out infinite;
+}
+
+/* Basic dropdown show/hide hook for BrandHeader recording menu */
+ul.dropdown-menu[data-open="true"] { --menu-display: block; display: block; }
+
+/* ----------------------------------------------------------
+   Unified Splitter Grip Icon (non-invasive)
+---------------------------------------------------------- */
+.as-split-gutter-icon {
+  width: 11px;
+  height: 44px;
+  opacity: 0.9;
+  background-image: radial-gradient(currentColor 1px, transparent 2px);
+  background-size: 4px 6px;
+  background-repeat: repeat;
+  background-position: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+.as-gutter-horizontal .as-split-gutter-icon {
+  width: 44px;
+  height: 11px;
+}
+.as-gutter-vertical .as-split-gutter-icon {
+  width: 11px;
+  height: 44px;
+}
+
+/* ============================================================
+   🔥 Fluent Tab Navigation - NO BORDERS ANYWHERE
+=============================================================== */
+.fluent-tab,
+.fluent-tab:hover,
+.fluent-tab:focus,
+.fluent-tab:active,
+.fluent-tab:focus-visible,
+.fluent-tab-active,
+.fluent-tab-active:hover,
+.fluent-tab-active:focus,
+.fluent-tab-active:active,
+.fluent-tab-active:focus-visible,
+[role="tab"],
+[role="tab"]:hover,
+[role="tab"]:focus,
+[role="tab"]:active,
+[role="tab"]:focus-visible,
+[role="tab"][aria-selected="true"],
+[role="tab"][aria-selected="true"]:hover,
+[role="tab"][aria-selected="true"]:focus,
+[role="tab"][aria-selected="true"]:active,
+[role="tab"][aria-selected="true"]:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Active/clicked tab background color */
+.fluent-tab-active,
+[role="tab"][aria-selected="true"] {
+  background-color: #1d4dd4 !important;
+}
+
+
+/* ============================================================
+   CRITICAL: Prevent Tab Movement on Active State
+=============================================================== */
+.fluent-tab,
+.fluent-tab-active,
+[role="tab"] {
+  padding: 0.5rem 1rem !important;
+  margin: 0 !important;
+  height: auto !important;
+  line-height: 1.5 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+}
+
+.fluent-tab-active,
+[role="tab"][aria-selected="true"] {
+  background-color: #1d4dd4 !important;
+  padding: 0.5rem 1rem !important;
+  margin: 0 !important;
+}
