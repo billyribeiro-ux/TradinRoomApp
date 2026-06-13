@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
+import type { Tables } from '../types/database.types';
 
 interface Integration {
   id: string;
@@ -38,7 +39,7 @@ export const useIntegrationStore = create<IntegrationState>()(
             .eq('user_id', userId);
 
           if (error) throw error;
-          const connections: Integration[] = (data || []).map((item: any) => ({
+          const connections: Integration[] = (data || []).map((item: Tables<'user_integrations'>) => ({
             id: item.id,
             provider: item.integration_type,
             access_token: item.access_token,

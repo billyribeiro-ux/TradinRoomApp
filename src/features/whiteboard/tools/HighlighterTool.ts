@@ -19,11 +19,12 @@ import {
   viewportCache,
   simplifyPoints,
 } from '../utils/performance/index';
-import type { 
-  WhiteboardShape, 
+import type {
+  WhiteboardShape,
   WhiteboardPoint,
   ViewportState,
-  StrokeMetadata
+  StrokeMetadata,
+  WhiteboardGradient
 } from '../types';
 
 // Import the extended type if your types file doesn't have metadata
@@ -38,7 +39,7 @@ interface HighlighterAnnotationWithMetadata {
   opacity: number;
   locked: boolean;
   points: WhiteboardPoint[];
-  colorGradient: any; // Use proper gradient type from your types
+  colorGradient: WhiteboardGradient;
   thickness: number;
   composite: 'multiply' | 'normal' | 'overlay';
   createdAt: number;
@@ -250,7 +251,9 @@ export function handleHighlighterPointerDown(
     // Calculate screen coordinates (no DPR adjustment needed for input)
     const screenX = e.clientX - rect.left;
     const screenY = e.clientY - rect.top;
-    const worldPos = screenToWorld(screenX, screenY, viewportState);
+    // viewportCache is a generic cache keyed by the value passed in; the entry
+    // we read back is the ViewportState we supplied, so narrow it from `unknown`.
+    const worldPos = screenToWorld(screenX, screenY, viewportState as ViewportState);
 
     // Store positions
     toolState.lastPointerPosition = { x: e.clientX, y: e.clientY };
@@ -342,7 +345,9 @@ export function handleHighlighterPointerMove(
     // Calculate screen coordinates
     const screenX = e.clientX - rect.left;
     const screenY = e.clientY - rect.top;
-    const worldPos = screenToWorld(screenX, screenY, viewportState);
+    // viewportCache is a generic cache keyed by the value passed in; the entry
+    // we read back is the ViewportState we supplied, so narrow it from `unknown`.
+    const worldPos = screenToWorld(screenX, screenY, viewportState as ViewportState);
 
     // DIRECT drawing - no smoothing, instant response
     if (toolState.lastWorldPosition) {

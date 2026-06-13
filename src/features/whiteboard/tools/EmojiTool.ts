@@ -14,7 +14,7 @@ import { screenToWorld } from '../utils/transform';
 import { hitTestEmoji } from '../utils/hitTest';
 import { debug } from '../utils/debug';
 import { pointerBatcher, viewportCache, toViewportState } from '../../../utils/performance';
-import type { EmojiAnnotation, WhiteboardPoint, ViewportState } from '../types';
+import type { EmojiAnnotation, EmojiObject, WhiteboardPoint, ViewportState } from '../types';
 
 export interface EmojiToolState {
   isActive: boolean;
@@ -132,9 +132,9 @@ export function insertEmoji(glyph: string, at: { x: number; y: number }) {
     ...viewport,
     width,
     height,
-  } as any);
+  } as ViewportState);
 
-  const emoji = {
+  const emoji: EmojiObject = {
     id: `emoji-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     type: 'emoji',
     emoji: glyph,
@@ -148,7 +148,7 @@ export function insertEmoji(glyph: string, at: { x: number; y: number }) {
     locked: false,
     createdAt: Date.now(),
     updatedAt: Date.now(),
-  } as any;
+  };
   
   store.addEmoji(emoji);
   store.pushHistory('insert-emoji', { emoji });

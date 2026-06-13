@@ -14,6 +14,8 @@ import { pointerBatcher, viewportCache, toViewportState } from '../../../utils/p
 import type {
   ViewportTransform,
   WhiteboardPoint,
+  WhiteboardShape,
+  ShapeObject,
 } from '../types';
 
 const __BROWSER__ = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -123,7 +125,7 @@ export function handleCirclePointerDown(
   const now = Date.now();
   toolState.currentShapeId = id;
 
-  const newShape: any = {
+  const newShape = {
     id,
     type: 'circle',
     color,
@@ -137,7 +139,9 @@ export function handleCirclePointerDown(
     updatedAt: now,
   };
 
-  store.addShape(newShape);
+  // Runtime shape carries draw-tool extras (lineStyle/timestamp) and omits
+  // base layout fields (x/y/scale/rotation); narrow to the store's union here.
+  store.addShape(newShape as unknown as WhiteboardShape);
   e.preventDefault();
   e.stopPropagation();
   return true;
@@ -152,7 +156,7 @@ export function handleCirclePointerMove(
   if (!toolState.isActive || !toolState.isDrawing || !toolState.currentShapeId) return false;
 
   const store = useWhiteboardStore.getState();
-  const shape = store.shapes.get(toolState.currentShapeId) as any;
+  const shape = store.shapes.get(toolState.currentShapeId) as ShapeObject | undefined;
   if (!shape || !shape.points || shape.points.length < 1) return false;
 
   // Update shift lock live if user presses/releases Shift during drag
@@ -175,7 +179,7 @@ export function handleCirclePointerMove(
     if (!toolState.currentShapeId) return;
 
     const currentStore = useWhiteboardStore.getState();
-    const currentShape = currentStore.shapes.get(toolState.currentShapeId) as any;
+    const currentShape = currentStore.shapes.get(toolState.currentShapeId) as ShapeObject | undefined;
     if (!currentShape || !currentShape.points) return;
 
     currentStore.updateShape(toolState.currentShapeId, {

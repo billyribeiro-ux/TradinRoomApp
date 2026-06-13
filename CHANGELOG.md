@@ -108,11 +108,29 @@ cleanly end-to-end after these changes.
 | FluentUI vendor chunk | ~15.5 MB (3.13 MB gzip) | ~270 KB (73 KB gzip) |
 | Bundling | single monolithic chunk | route + vendor code-split |
 
+### Type Safety — zero `any`
+
+- Eliminated **every** `@typescript-eslint/no-explicit-any` (~112 across 34
+  files) by giving each value an accurate type — no `eslint-disable`,
+  `@ts-ignore`, or variable renames. Highlights:
+  - Test-debug `window.__WB_*` globals replaced with a typed `Window`
+    augmentation; `unknown[]` logger args; Supabase realtime callbacks typed
+    via `RealtimePostgresChangesPayload<T>`; discriminated-union access fixed
+    with precise failure-variant casts (project runs `strictNullChecks: false`,
+    which disables truthiness narrowing); whiteboard tool/shape literals typed
+    against the `WhiteboardShape` union; generic accessors switched to
+    `unknown` + narrowing.
+  - The exported Supabase client is typed `SupabaseClient` (the real type, not
+    `any`); the strict `<Database>` generic is intentionally not bound because
+    the checked-in generated `database.types.ts` is incomplete vs the live
+    schema — documented inline in `src/lib/supabase.ts`.
+- Cleared the remaining style warnings (`consistent-type-imports`,
+  `consistent-type-definitions`). `npm run lint` is now **0 errors, 0 warnings**.
+
 ### Verification
 
 - `npm run typecheck` — 0 errors.
-- `npm run lint` — 0 errors (115 pre-existing `no-explicit-any` **warnings**
-  remain, intentionally `warn`-level per the project's ESLint config).
+- `npm run lint` — **0 errors, 0 warnings**.
 - `npm run test:unit` — 64/64 passing.
 - `npm run build` — succeeds.
 

@@ -2,11 +2,11 @@
 
 declare module '*/utils/performance' {
   export function trackPerformance(name: string, fn: () => void): void;
-  export function getMetrics(): any;
+  export function getMetrics(): Record<string, number>;
 }
 
 declare module '*/utils/exporters' {
-  export function exportToJSON(data: any): string;
+  export function exportToJSON(data: unknown): string;
   export function exportToPNG(canvas: HTMLCanvasElement): Promise<Blob>;
 }
 

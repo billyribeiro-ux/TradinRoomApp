@@ -58,12 +58,11 @@ export async function getRoomFiles(roomId: string): Promise<RoomFile[]> {
       .order("created_at", { ascending: false });
 
     if (error) throw new RoomFileError("Failed to fetch files", { error });
-    return (data || []).map((item: any) => {
-      const anyItem = item as Record<string, unknown>;
+    return ((data || []) as Record<string, unknown>[]).map((item: Record<string, unknown>) => {
       return {
         ...item,
-        file_size: (anyItem.file_size as number) || 0,
-        mime_type: (anyItem.mime_type as string) || 'application/octet-stream'
+        file_size: (item.file_size as number) || 0,
+        mime_type: (item.mime_type as string) || 'application/octet-stream'
       } as RoomFile;
     });
   } catch (error) {

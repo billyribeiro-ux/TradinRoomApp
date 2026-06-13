@@ -34,7 +34,7 @@ export function HealthCheck() {
 
     // Check realtime
     const channel = supabase.channel('health-check');
-    channel.subscribe((status: any) => {
+    channel.subscribe((status: 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR') => {
       if (status === 'SUBSCRIBED') {
         setStatus(s => ({ ...s, realtime: 'healthy' }));
         channel.unsubscribe();

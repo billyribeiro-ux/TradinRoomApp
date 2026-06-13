@@ -6,6 +6,7 @@
 
 import { useWhiteboardStore } from '../state/whiteboardStore';
 import { worldToScreen } from '../utils/transform';
+import type { ViewportState, WhiteboardPoint } from '../types';
 
 interface RemoteCursorsProps {
   width: number;
@@ -25,7 +26,10 @@ export function RemoteCursors({ width, height }: RemoteCursorsProps) {
   return (
     <div className="absolute inset-0 pointer-events-none z-10">
       {Array.from(remoteCursors.values()).map((cursor) => {
-        const screenPos = worldToScreen(cursor.position, viewportState as any);
+        const screenPos = worldToScreen(
+          cursor.position as WhiteboardPoint,
+          viewportState as ViewportState
+        );
         
         return (
           <div

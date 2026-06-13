@@ -2,7 +2,7 @@
 // HISTORY UTILITIES - Undo/Redo with Batching
 // ============================================================================
 
-import type { HistoryEntry, WhiteboardAnnotation } from '../types';
+import type { HistoryEntry, WhiteboardAnnotation, ViewportState } from '../types';
 
 interface BatchState {
   action: string;
@@ -30,12 +30,14 @@ export function commitBatch(endSnapshot: Map<string, WhiteboardAnnotation>): His
     return null;
   }
   
-  const entry: any = {
+  const entry: HistoryEntry = {
     id: `history-${Date.now()}`,
     action: currentBatch.action,
     timestamp: currentBatch.startTime,
     shapes: new Map(endSnapshot),
-    viewport: {} as any,
+    // Placeholder viewport: batch history entries don't capture viewport state,
+    // so an empty object stands in for the ViewportState (runtime behavior preserved).
+    viewport: {} as ViewportState,
     data: {
       before: currentBatch.startSnapshot,
       after: new Map(endSnapshot),

@@ -8,7 +8,7 @@ import type { WhiteboardShape, WhiteboardPoint } from '../types';
  * Check if shape has points property
  */
 export function hasPoints(shape: WhiteboardShape): shape is WhiteboardShape & { points: WhiteboardPoint[] } {
-  return 'points' in shape && Array.isArray((shape as any).points);
+  return 'points' in shape && Array.isArray((shape as { points?: unknown }).points);
 }
 
 /**
@@ -27,6 +27,6 @@ export function getPoints(shape: WhiteboardShape): WhiteboardPoint[] {
 export function hasProperty<K extends string>(
   shape: WhiteboardShape,
   prop: K
-): shape is WhiteboardShape & Record<K, any> {
+): shape is WhiteboardShape & Record<K, unknown> {
   return prop in shape;
 }

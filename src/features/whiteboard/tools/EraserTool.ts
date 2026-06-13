@@ -135,7 +135,7 @@ function rebuildSpatialIndex(): void {
   toolState.spatialIndex = new SpatialGrid();
 
   store.shapes.forEach((shape, id) => {
-    const shapeWithPoints = shape as any;
+    const shapeWithPoints = shape as { points?: WhiteboardPoint[] };
     if (shapeWithPoints.points && shapeWithPoints.points.length > 0) {
       toolState.spatialIndex!.insert(id, shapeWithPoints.points);
     }
@@ -310,7 +310,7 @@ function eraseAtPoint(
     if (shape.locked) continue;
     if (!erasableTypes.has(shape.type)) continue;
     
-    const shapeWithPoints = shape as any;
+    const shapeWithPoints = shape as { points?: WhiteboardPoint[] };
     if (!shapeWithPoints.points || shapeWithPoints.points.length === 0) continue;
 
     // Check if any point is within eraser radius

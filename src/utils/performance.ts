@@ -146,7 +146,7 @@ export function toViewportState(
 // PATH SIMPLIFICATION UTILITIES
 // =============================================================================
 
-type Point2D = { x: number; y: number };
+interface Point2D { x: number; y: number }
 
 /**
  * Squared perpendicular distance from point `p` to the segment `[a, b]`.

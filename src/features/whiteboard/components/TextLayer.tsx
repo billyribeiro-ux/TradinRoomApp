@@ -5,6 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useWhiteboardStore } from '../state/whiteboardStore';
+import type { TextShape } from '../types';
 
 export const TextLayer: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -56,7 +57,7 @@ export const TextLayer: React.FC = () => {
   const commitText = () => {
     if (text.trim()) {
       // Add text shape to store
-      addShape({
+      const shape: TextShape = {
         id: `text-${Date.now()}`,
         type: 'text',
         x: position.x,
@@ -73,7 +74,8 @@ export const TextLayer: React.FC = () => {
         locked: false,
         createdAt: Date.now(),
         updatedAt: Date.now(),
-      } as any);
+      };
+      addShape(shape);
     }
     setIsEditing(false);
     setText('');

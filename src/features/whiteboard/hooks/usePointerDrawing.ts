@@ -143,10 +143,10 @@ export function usePointerDrawing(
 
       const { shapes } = useWhiteboardStore.getState();
       const shape = shapes.get(currentShapeId.current);
-      if (!shape || !('points' in shape) || !(shape as any).points || (shape as any).points.length < 1) return;
+      if (!shape || !('points' in shape) || !shape.points || shape.points.length < 1) return;
 
       // Continuous freehand: append points
-      const newPoints = [...(shape as any).points, worldPoint];
+      const newPoints: WhiteboardPoint[] = [...shape.points, worldPoint];
 
       updateShape(currentShapeId.current, {
         points: newPoints,

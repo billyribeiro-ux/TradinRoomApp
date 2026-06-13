@@ -5,7 +5,7 @@
  * SSR-safe, readonly where appropriate
  */
 
-import { LoadingState } from '../../components/chat/constants';
+import type { LoadingState } from '../../components/chat/constants';
 
 // ---------------------------------------------------------------------------
 // Primitives
