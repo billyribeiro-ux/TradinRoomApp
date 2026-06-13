@@ -67,7 +67,7 @@ try {
 // Test 5: Database Query (test permissions)
 console.log('\n5️⃣ DATABASE ACCESS');
 try {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('users')
     .select('count')
     .limit(0);

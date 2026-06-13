@@ -1,32 +1,22 @@
-import { useEffect, useState } from 'react';
 import type React from 'react';
+import * as fluentIcons from './fluentIcons';
 
 type FluentIconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 type FluentIconsModule = Record<string, FluentIconComponent>;
 
+// Resolved once at module load from the curated `fluentIcons` barrel, so only
+// the glyphs the app references are bundled — instead of dynamically importing
+// the entire ~15MB `@fluentui/react-icons` package at runtime.
+const icons = fluentIcons as unknown as FluentIconsModule;
+
 /**
  * useFluentIcons
- * Lazy-loads @fluentui/react-icons at runtime to keep initial bundle lean
- * and provides a resilient fallback when certain icons are not available.
- * Returns the module object or null while loading.
+ * Returns the curated map of FluentUI icon components, keyed by export name.
+ * Consumers look icons up by name (e.g. `fi?.Settings24Regular`) and already
+ * guard for missing entries, so any glyph not present in the curated set
+ * degrades gracefully to the caller's local fallback — identical to the prior
+ * "still loading / not available" behaviour, but without the runtime import.
  */
-export function useFluentIcons() {
-  const [mod, setMod] = useState<FluentIconsModule | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    import('@fluentui/react-icons')
-      .then((m) => {
-        if (!mounted) return;
-        setMod(m as unknown as FluentIconsModule);
-      })
-      .catch(() => {
-        // Silently ignore; callers should use local fallbacks
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  return mod;
+export function useFluentIcons(): FluentIconsModule {
+  return icons;
 }

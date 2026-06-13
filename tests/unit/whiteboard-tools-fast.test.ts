@@ -1,34 +1,15 @@
 /**
- * FAST & RELIABLE Unit Tests - No Browser BS
- * Testing actual TypeScript compilation and function signatures
+ * Fast, hermetic smoke tests for the whiteboard module surface.
+ *
+ * These assert that the public tool/util/store modules import cleanly and
+ * expose the functions the canvas runtime depends on. TypeScript compilation
+ * and production builds are verified by the dedicated `npm run typecheck` and
+ * `npm run build` pipeline steps — shelling out to `tsc`/`vite` from inside a
+ * unit test is slow, flaky, and duplicative, so it is intentionally not done
+ * here.
  */
 
 import { describe, it, expect } from 'vitest';
-
-describe('TypeScript Compilation - ZERO ERRORS Verification', () => {
-  it('should have zero TypeScript errors', async () => {
-    const { execSync } = await import('child_process');
-    
-    try {
-      execSync('npx tsc --noEmit', { 
-        cwd: process.cwd(),
-        stdio: 'pipe' 
-      });
-      
-      // If we get here, compilation succeeded
-      expect(true).toBe(true);
-      console.log('✅ TypeScript: ZERO ERRORS CONFIRMED');
-    } catch (error: any) {
-      const output = error.stdout?.toString() || error.stderr?.toString() || '';
-      const errorCount = (output.match(/error TS/g) || []).length;
-      
-      console.error('❌ TypeScript Errors Found:', errorCount);
-      console.error(output);
-      
-      expect(errorCount).toBe(0);
-    }
-  });
-});
 
 describe('Whiteboard Tool Functions - Type Safety', () => {
   it('should import all tool modules without errors', async () => {
@@ -121,10 +102,15 @@ describe('Whiteboard Utils - Type Safety', () => {
 
   it('should import draw primitives', async () => {
     const drawPrimitives = await import('../../src/features/whiteboard/utils/drawPrimitives');
-    
-    expect(typeof drawPrimitives.drawPath).toBe('function');
+
+    expect(typeof drawPrimitives.drawStroke).toBe('function');
+    expect(typeof drawPrimitives.drawRectangle).toBe('function');
+    expect(typeof drawPrimitives.drawCircle).toBe('function');
+    expect(typeof drawPrimitives.drawLine).toBe('function');
     expect(typeof drawPrimitives.drawText).toBe('function');
-    
+    expect(typeof drawPrimitives.drawShape).toBe('function');
+    expect(typeof drawPrimitives.clearCanvas).toBe('function');
+
     console.log('✅ Draw Primitives: Functions exported');
   });
 });
@@ -150,86 +136,24 @@ describe('Type Definitions - Completeness', () => {
   });
 });
 
-describe('Production Build - Verification', () => {
-  it('should build without errors', async () => {
-    const { execSync } = await import('child_process');
-    
-    try {
-      // Just verify TypeScript compiles, don't actually build
-      execSync('npx tsc --noEmit', { 
-        cwd: process.cwd(),
-        stdio: 'pipe' 
-      });
-      
-      expect(true).toBe(true);
-      console.log('✅ Production Build: TypeScript compilation verified');
-    } catch (error: any) {
-      const output = error.stdout?.toString() || error.stderr?.toString() || '';
-      console.error('Build failed:', output);
-      throw error;
-    }
-  });
-});
-
 describe('FINAL VERIFICATION - All Systems', () => {
-  it('should confirm zero TypeScript errors and all tools working', async () => {
-    const results = {
-      typescript: false,
-      penTool: false,
-      eraserTool: false,
-      lineTool: false,
-      rectangleTool: false,
-      circleTool: false,
-      transform: false,
-      store: false,
-    };
-    
-    try {
-      // TypeScript check
-      const { execSync } = await import('child_process');
-      execSync('npx tsc --noEmit', { stdio: 'pipe' });
-      results.typescript = true;
-      
-      // Tool imports
-      await import('../../src/features/whiteboard/tools/PenTool');
-      results.penTool = true;
-      
-      await import('../../src/features/whiteboard/tools/EraserTool');
-      results.eraserTool = true;
-      
-      await import('../../src/features/whiteboard/tools/LineTool');
-      results.lineTool = true;
-      
-      await import('../../src/features/whiteboard/tools/RectangleTool');
-      results.rectangleTool = true;
-      
-      await import('../../src/features/whiteboard/tools/CircleTool');
-      results.circleTool = true;
-      
-      await import('../../src/features/whiteboard/utils/transform');
-      results.transform = true;
-      
-      await import('../../src/features/whiteboard/state/whiteboardStore');
-      results.store = true;
-      
-    } catch (error) {
-      console.error('Verification failed:', error);
+  it('should import every core whiteboard module without errors', async () => {
+    const modules = await Promise.all([
+      import('../../src/features/whiteboard/tools/PenTool'),
+      import('../../src/features/whiteboard/tools/EraserTool'),
+      import('../../src/features/whiteboard/tools/LineTool'),
+      import('../../src/features/whiteboard/tools/RectangleTool'),
+      import('../../src/features/whiteboard/tools/CircleTool'),
+      import('../../src/features/whiteboard/utils/transform'),
+      import('../../src/features/whiteboard/utils/drawPrimitives'),
+      import('../../src/features/whiteboard/state/whiteboardStore'),
+    ]);
+
+    expect(modules).toHaveLength(8);
+    for (const mod of modules) {
+      expect(mod).toBeDefined();
     }
-    
-    expect(results.typescript).toBe(true);
-    expect(results.penTool).toBe(true);
-    expect(results.eraserTool).toBe(true);
-    expect(results.lineTool).toBe(true);
-    expect(results.rectangleTool).toBe(true);
-    expect(results.circleTool).toBe(true);
-    expect(results.transform).toBe(true);
-    expect(results.store).toBe(true);
-    
-    console.log('✅ FINAL VERIFICATION: ALL SYSTEMS OPERATIONAL');
-    console.log('✅ TypeScript: ZERO ERRORS');
-    console.log('✅ All Tools: WORKING');
-    console.log('✅ Production: READY');
-    console.log('');
-    console.log('🎉 ENTERPRISE GRADE QUALITY CONFIRMED!');
+
+    console.log('✅ FINAL VERIFICATION: all core whiteboard modules operational');
   });
 });

@@ -36,10 +36,6 @@ interface AuthState {
 let sessionMonitorInterval: NodeJS.Timeout | undefined = undefined;
 let sessionChannel: RealtimeChannel | undefined = undefined;
 
-// Secure session storage using in-memory storage instead of localStorage to prevent XSS
-// @ts-ignore - Reserved for future session security implementation
-let secureSessionData: { currentSession: Session, expiresAt: number } | undefined = undefined;
-
 export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> | ((state: AuthState) => Partial<AuthState>)) => void, get: () => AuthState) => ({
   user: undefined,
   session: undefined,
@@ -65,12 +61,6 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
           isAuthenticated: true,
           sessionToken: session.access_token,
         });
-
-        // Store session securely in memory
-        secureSessionData = {
-          currentSession: session,
-          expiresAt: Math.floor(Date.now() / 1000) + session.expires_in
-        };
 
         // Session enforcement enabled for security
         await get().enforceSession(session.user.id);
@@ -134,12 +124,6 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
           isAuthenticated: true,
         });
 
-        // Store session securely in memory
-        secureSessionData = {
-          currentSession: data.session,
-          expiresAt: Math.floor(Date.now() / 1000) + data.session.expires_in
-        };
-
         // Microsoft Azure AD pattern: Enforce single session
         await get().enforceSession(data.user.id);
       }
@@ -173,9 +157,6 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
         isAuthenticated: false,
       });
 
-      // Clear secure session data
-      secureSessionData = undefined;
-      
     } catch (error) {
       console.error('[AuthStore] Fatal sign out error:', error);
       set({
@@ -193,20 +174,12 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
         session,
         isAuthenticated: true,
       });
-      
-      // Store session securely in memory
-      secureSessionData = {
-        currentSession: session,
-        expiresAt: Math.floor(Date.now() / 1000) + session.expires_in
-      };
     } else {
       set({
         user: undefined,
         session: undefined,
         isAuthenticated: false,
       });
-      // Clear secure session data
-      secureSessionData = undefined;
     }
   },
 
@@ -225,12 +198,6 @@ export const useAuthStore = create<AuthState>((set: (state: Partial<AuthState> |
           session,
           isAuthenticated: true,
         });
-        
-        // Store session securely in memory
-        secureSessionData = {
-          currentSession: session,
-          expiresAt: Math.floor(Date.now() / 1000) + session.expires_in
-        };
       }
     } catch (error) {
       console.error('[AuthStore] Fatal refresh error:', error);

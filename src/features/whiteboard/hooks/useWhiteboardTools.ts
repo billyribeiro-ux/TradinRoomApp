@@ -11,7 +11,7 @@
 
 import { useCallback, useRef, useEffect, useMemo } from 'react';
 import { useWhiteboardStore } from '../state/whiteboardStore';
-import type { ViewportState, WhiteboardTool } from '../types';
+import type { ViewportState, ViewportTransform, WhiteboardTool } from '../types';
 
 // ============================================================================
 // Tool Handler Imports
@@ -124,9 +124,9 @@ interface UseWhiteboardToolsProps {
 interface ToolHandlers {
   activate: (canvas?: HTMLElement | HTMLCanvasElement) => void;
   deactivate: () => void;
-  pointerDown: (e: PointerEvent, canvas: HTMLElement | HTMLCanvasElement, viewport: any) => boolean;
-  pointerMove: (e: PointerEvent, canvas: HTMLElement | HTMLCanvasElement, viewport: any) => boolean;
-  pointerUp: (e: PointerEvent, canvas?: HTMLElement | HTMLCanvasElement, viewport?: any) => boolean;
+  pointerDown: (e: PointerEvent, canvas: HTMLElement | HTMLCanvasElement, viewport: ViewportState | ViewportTransform) => boolean;
+  pointerMove: (e: PointerEvent, canvas: HTMLElement | HTMLCanvasElement, viewport: ViewportState | ViewportTransform) => boolean;
+  pointerUp: (e: PointerEvent, canvas?: HTMLElement | HTMLCanvasElement, viewport?: ViewportState | ViewportTransform) => boolean;
   keyDown?: (e: KeyboardEvent) => boolean;
 }
 

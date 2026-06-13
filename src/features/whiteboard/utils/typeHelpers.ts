@@ -111,21 +111,21 @@ export function getShapePoints(shape: WhiteboardShape): Array<{ x: number; y: nu
 /**
  * Check if shape has width property
  */
-export function hasWidth(shape: any): shape is { width: number } {
-  return typeof shape?.width === 'number';
+export function hasWidth(shape: unknown): shape is { width: number } {
+  return shape != null && typeof (shape as { width?: unknown }).width === 'number';
 }
 
 /**
  * Check if shape has height property
  */
-export function hasHeight(shape: any): shape is { height: number } {
-  return typeof shape?.height === 'number';
+export function hasHeight(shape: unknown): shape is { height: number } {
+  return shape != null && typeof (shape as { height?: unknown }).height === 'number';
 }
 
 /**
  * Get safe dimensions
  */
-export function getShapeDimensions(shape: any): { width: number; height: number } {
+export function getShapeDimensions(shape: unknown): { width: number; height: number } {
   return {
     width: hasWidth(shape) ? shape.width : 100,
     height: hasHeight(shape) ? shape.height : 100,

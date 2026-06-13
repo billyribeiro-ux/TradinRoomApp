@@ -51,7 +51,7 @@ import { ChatInput } from './ChatInput.fluent';
 import { ChatMessage } from './ChatMessage.fluent';
 import { ChatSettings } from '../../chat/ChatSettings';
 import { DateHeader } from '../../chat/DateHeader';
-import type { LoadingStates, UploadProgress } from '../../../features/chat/chat.types';
+import type { LoadingStates } from '../../../features/chat/chat.types';
 import {
   LoadingState
 } from '../../chat/constants';

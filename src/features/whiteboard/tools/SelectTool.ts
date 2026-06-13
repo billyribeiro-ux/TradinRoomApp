@@ -2,7 +2,7 @@
 // SELECT TOOL - Shape selection and manipulation
 // ============================================================================
 
-import type { ViewportTransform, WhiteboardShape, WhiteboardPoint } from '../types';
+import type { ViewportTransform, WhiteboardShape, WhiteboardPoint, TextShape } from '../types';
 import { screenToWorld } from '../utils/transform';
 import { useWhiteboardStore } from '../state/whiteboardStore';
 
@@ -52,8 +52,9 @@ function hitTestShape(shape: WhiteboardShape, point: WhiteboardPoint): boolean {
   const TOLERANCE = 10;
   
   if (shape.type === 'text') {
-    const width = (shape as any).width || 100;
-    const height = (shape as any).height || 30;
+    const textShape = shape as TextShape;
+    const width = textShape.width || 100;
+    const height = textShape.height || 30;
     return point.x >= shape.x - TOLERANCE &&
            point.x <= shape.x + width + TOLERANCE &&
            point.y >= shape.y - TOLERANCE &&

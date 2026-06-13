@@ -2,6 +2,11 @@
 // ──────────────────────────────────────────────
 // Real-time subscription management for Supabase
 // ──────────────────────────────────────────────
+import type {
+  RealtimePostgresChangesPayload,
+  REALTIME_SUBSCRIBE_STATES,
+} from '@supabase/supabase-js';
+
 import { supabase } from '../lib/supabase';
 import { useRoomStore } from '../store/roomStore';
 import type { ChatMessage, Alert, MediaTrack } from '../types/database.types';
@@ -35,7 +40,7 @@ export function subscribeToRoomChat(roomId: string) {
         table: 'chatmessages',
         filter: `room_id=eq.${roomId}`
       },
-      (payload: { eventType: string; new: ChatMessage; old: ChatMessage }) => {
+      (payload: RealtimePostgresChangesPayload<ChatMessage>) => {
         // Enterprise standard: Environment-based logging (dev only)
         if (import.meta.env.DEV) {
           console.debug('[subscribeToRoomChat] Received:', payload);
@@ -153,7 +158,7 @@ export function subscribeToRoomAlerts(roomId: string) {
         table: 'alerts',
         filter: `room_id=eq.${roomId}`  // FIXED: Changed from tenant_id to room_id
       },
-      (payload: any) => {
+      (payload: RealtimePostgresChangesPayload<Alert>) => {
         // Enterprise standard: Environment-based logging (dev only)
         if (import.meta.env.DEV) {
           const newAlert = payload.new as Alert | undefined;
@@ -193,7 +198,7 @@ export function subscribeToRoomAlerts(roomId: string) {
         }
       }
     )
-    .subscribe((status: any) => {
+    .subscribe((status: REALTIME_SUBSCRIBE_STATES) => {
       // Enterprise standard: Error handling for subscription failures
       if (status === 'SUBSCRIBED') {
         if (import.meta.env.DEV) {
@@ -250,7 +255,7 @@ export function subscribeToRoomTracks(roomId: string, _includeCleanup: boolean =
         table: 'mediatrack',
         filter: `room_id=eq.${roomId}`
       },
-      (payload: any) => {
+      (payload: RealtimePostgresChangesPayload<MediaTrack>) => {
         // Enterprise standard: Environment-based logging (dev only)
         if (import.meta.env.DEV) {
           console.debug('[subscribeToRoomTracks] Received:', payload);

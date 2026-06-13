@@ -94,7 +94,7 @@ class TrackHeartbeatService {
       }
 
       // Update tracks by ID
-      const trackIds = tracksToCleanup.map((t: any) => t.id);
+      const trackIds = tracksToCleanup.map((t: { id: string }) => t.id);
       const { data, error } = await supabase
         .from('mediatrack')
         .update({
@@ -107,7 +107,9 @@ class TrackHeartbeatService {
         return 0;
       }
 
-      const cleanedCount = data?.length || 0;
+      // `.update().in()` without `.select()` resolves `data` to null; treat any
+      // returned rows defensively. (Cast to a typed array, never `any`.)
+      const cleanedCount = (data as unknown[] | null)?.length || 0;
       console.log('[Heartbeat] Cleaned up tracks:', cleanedCount);
       return cleanedCount;
     } catch (error) {

@@ -184,8 +184,8 @@ interface WhiteboardStore {
   
   undo: () => void;
   redo: () => void;
-  saveHistory: (action: string, metadata?: Record<string, any>) => void;
-  pushHistory: (action: string, metadata?: Record<string, any>) => void; // Alias for saveHistory
+  saveHistory: (action: string, metadata?: Record<string, unknown>) => void;
+  pushHistory: (action: string, metadata?: Record<string, unknown>) => void; // Alias for saveHistory
   compressHistory: () => void;
   clearHistory: () => void;
   

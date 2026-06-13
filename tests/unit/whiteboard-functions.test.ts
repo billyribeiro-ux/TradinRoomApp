@@ -3,29 +3,32 @@
  * Testing each function separately with type safety verification
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 
 // Import whiteboard utilities
 import { worldToScreen, screenToWorld } from '../../src/features/whiteboard/utils/transform';
 import { simplifyPoints } from '../../src/utils/performance';
 import type { ViewportState, WhiteboardPoint } from '../../src/features/whiteboard/types';
 
-describe('Whiteboard Transform Functions', () => {
-  const mockViewport: ViewportState = {
-    x: 0,
-    y: 0,
-    zoom: 1,
-    panX: 0,
-    panY: 0,
-    scale: 1,
-    width: 1920,
-    height: 1080,
-    dpr: 1,
-    canvasWidth: 1920,
-    canvasHeight: 1080,
-  };
+// Module-scoped fixture so every describe block (transforms, performance, edge
+// cases) shares the same baseline viewport. Previously this lived inside the
+// first describe closure, which made the later blocks throw "mockViewport is
+// not defined".
+const mockViewport: ViewportState = {
+  x: 0,
+  y: 0,
+  zoom: 1,
+  panX: 0,
+  panY: 0,
+  scale: 1,
+  width: 1920,
+  height: 1080,
+  dpr: 1,
+  canvasWidth: 1920,
+  canvasHeight: 1080,
+};
 
+describe('Whiteboard Transform Functions', () => {
   describe('worldToScreen', () => {
     it('should convert world coordinates to screen coordinates', () => {
       const worldPoint: WhiteboardPoint = { x: 100, y: 100 };
@@ -191,17 +194,17 @@ describe('Edge Cases', () => {
     const extremeZoom = { ...mockViewport, zoom: 100, scale: 100 };
     
     const result = worldToScreen(point, extremeZoom);
-    expect(result.x).toBeFinite();
-    expect(result.y).toBeFinite();
+    expect(Number.isFinite(result.x)).toBe(true);
+    expect(Number.isFinite(result.y)).toBe(true);
     console.log('✅ Edge Case: Extreme zoom handled');
   });
 
   it('should handle negative coordinates', () => {
     const point: WhiteboardPoint = { x: -100, y: -100 };
     const result = worldToScreen(point, mockViewport);
-    
-    expect(result.x).toBeFinite();
-    expect(result.y).toBeFinite();
+
+    expect(Number.isFinite(result.x)).toBe(true);
+    expect(Number.isFinite(result.y)).toBe(true);
     console.log('✅ Edge Case: Negative coordinates handled');
   });
 

@@ -1,6 +1,6 @@
 // src/services/oauthApi.ts
 import { supabase } from '../lib/supabase';
-import type { Json } from '../types/database.types';
+import type { Json, Tables } from '../types/database.types';
 // Fixed: 2025-01-24 - Eradicated 1 null usage(s) - Microsoft TypeScript standards
 // Replaced null with undefined, removed unnecessary null checks, used optional types
 
@@ -424,7 +424,7 @@ export async function getUserOAuthConnections(userId: string): Promise<OAuthConn
     return [];
   }
 
-  return (data || []).map((item: any) => ({
+  return (data || []).map((item: Tables<'user_integrations'>) => ({
     id: item.id,
     user_id: item.user_id,
     provider: item.integration_type as 'spotify' | 'x' | 'linkedin',

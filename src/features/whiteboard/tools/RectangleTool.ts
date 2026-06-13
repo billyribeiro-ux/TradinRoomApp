@@ -14,7 +14,8 @@ import { pointerBatcher, viewportCache, toViewportState } from '../../../utils/p
 import type {
   ViewportTransform,
   WhiteboardPoint,
-  WhiteboardAnnotation,
+  WhiteboardShape,
+  ShapeObject,
 } from '../types';
 
 const __BROWSER__ = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -124,7 +125,7 @@ export function handleRectanglePointerDown(
   const now = Date.now();
   toolState.currentShapeId = id;
 
-  const newShape: any = {
+  const newShape = {
     id,
     type: 'rectangle',
     color,
@@ -138,7 +139,9 @@ export function handleRectanglePointerDown(
     updatedAt: now,
   };
 
-  store.addShape(newShape);
+  // Runtime shape carries draw-tool extras (lineStyle/timestamp) and omits
+  // base layout fields (x/y/scale/rotation); narrow to the store's union here.
+  store.addShape(newShape as unknown as WhiteboardShape);
   e.preventDefault();
   e.stopPropagation();
   return true;
@@ -153,7 +156,7 @@ export function handleRectanglePointerMove(
   if (!toolState.isActive || !toolState.isDrawing || !toolState.currentShapeId) return false;
 
   const store = useWhiteboardStore.getState();
-  const shape = store.shapes.get(toolState.currentShapeId) as any;
+  const shape = store.shapes.get(toolState.currentShapeId) as ShapeObject | undefined;
   if (!shape || !shape.points || shape.points.length < 1) return false;
 
   // Update shift lock live if user presses/releases Shift during drag
@@ -185,7 +188,7 @@ export function handleRectanglePointerMove(
     if (!toolState.currentShapeId) return;
 
     const currentStore = useWhiteboardStore.getState();
-    const currentShape = currentStore.shapes.get(toolState.currentShapeId) as any;
+    const currentShape = currentStore.shapes.get(toolState.currentShapeId) as ShapeObject | undefined;
     if (!currentShape || !currentShape.points) return;
 
     currentStore.updateShape(toolState.currentShapeId, {

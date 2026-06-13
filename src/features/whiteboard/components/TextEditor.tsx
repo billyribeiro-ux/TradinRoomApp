@@ -8,7 +8,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useWhiteboardStore } from '../state/whiteboardStore';
 import { worldToScreen } from '../utils/transform';
 import { debug } from '../utils/debug';
-import type { WhiteboardPoint } from '../types';
+import type { WhiteboardPoint, ViewportState } from '../types';
 
 interface TextEditorProps {
   position: WhiteboardPoint;
@@ -49,7 +49,7 @@ export function TextEditor({
     ...viewport,
     width: viewportWidth ?? (typeof window !== 'undefined' ? window.innerWidth : 1920),
     height: viewportHeight ?? (typeof window !== 'undefined' ? window.innerHeight : 1080),
-  } as any);
+  } as ViewportState);
   
   useEffect(() => {
     // Focus textarea on mount

@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { useRoomStore } from '../../store/roomStore';
 import { useThemeStore } from '../../store/themeStore';
 import { useToastStore } from '../../store/toastStore';
-import { validateImageFile } from '../../utils/fileValidation';
+import { validateImageFile, type FileValidationFailure } from '../../utils/fileValidation';
 import { uploadPublicAsset } from '../../services/storageService';
 import { createRateLimiter } from '../../utils/rateLimit';
 
@@ -53,7 +53,9 @@ export function BrandingSettings() {
     // Validate file using shared utility
     const validation = validateImageFile(file, UPLOAD_CONFIG.ALLOWED_TYPES, LIMITS.maxAvatarSize);
     if (!validation.ok) {
-      addToast((validation as any).reason || 'Invalid file', 'error');
+      // strictNullChecks is off project-wide, which disables discriminant
+      // narrowing via `!validation.ok`; cast to the failure variant explicitly.
+      addToast((validation as FileValidationFailure).reason || 'Invalid file', 'error');
       return;
     }
 
@@ -83,7 +85,7 @@ export function BrandingSettings() {
       }
 
       if (!result.ok) {
-        addToast((result as any).error || 'Upload failed', 'error');
+        addToast((result as { ok: false; error: string }).error || 'Upload failed', 'error');
         return;
       }
 

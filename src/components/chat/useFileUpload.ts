@@ -14,7 +14,7 @@ import type { Database } from '../../types/database.types';
 type UserRow = Database['public']['Tables']['users']['Row'];
 type RoomRow = Database['public']['Tables']['rooms']['Row'];
 
-import type { LoadingStates, UploadProgress } from '../../features/chat/chat.types';
+import type { UploadProgress } from '../../features/chat/chat.types';
 import { LoadingState } from './constants';
 import { isValidFileType, isValidFileSize, compressImage } from './utils';
 

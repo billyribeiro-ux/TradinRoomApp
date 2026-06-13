@@ -52,11 +52,11 @@ export function hasShapePoints(shape: WhiteboardShape | undefined): boolean {
   return 'points' in shape && Array.isArray(shape.points) && shape.points.length > 0;
 }
 
-export function safeShapeWidth(shape: any): number {
+export function safeShapeWidth(shape: { width?: number } | null | undefined): number {
   return shape?.width ?? 100;
 }
 
-export function safeShapeHeight(shape: any): number {
+export function safeShapeHeight(shape: { height?: number } | null | undefined): number {
   return shape?.height ?? 100;
 }
 
@@ -117,15 +117,15 @@ export function createSafeViewportTransform(partial?: Partial<ViewportTransform>
 // TYPE NARROWING GUARDS
 // ============================================================================
 
-export function isDefinedViewport(viewport: any): viewport is ViewportState | ViewportTransform {
+export function isDefinedViewport(viewport: unknown): viewport is ViewportState | ViewportTransform {
   return viewport != null && typeof viewport === 'object';
 }
 
-export function isDefinedShape(shape: any): shape is WhiteboardShape {
+export function isDefinedShape(shape: unknown): shape is WhiteboardShape {
   return shape != null && typeof shape === 'object' && 'type' in shape && 'id' in shape;
 }
 
-export function isDefinedPoint(point: any): point is WhiteboardPoint {
+export function isDefinedPoint(point: unknown): point is WhiteboardPoint {
   return point != null && typeof point === 'object' && 'x' in point && 'y' in point;
 }
 

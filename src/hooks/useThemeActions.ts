@@ -34,6 +34,7 @@ import { useToastStore } from "../store/toastStore";
 // Added: 2025-01-24 - Import service hooks and error reporting
 
 import type { Room, Database , ChatMessage } from '../types/database.types';
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 type InsertRoom = Database['public']['Tables']['rooms']['Insert'];
 // Fixed: 2025-01-24 - Eradicated 5 null usage(s) - Microsoft TypeScript standards
@@ -385,7 +386,7 @@ export function useRealtimeMessages(roomId: string) {
         schema: 'public',
         table: 'chat_messages',
         filter: `room_id=eq.${roomId}`
-      }, (payload: any) => {
+      }, (payload: RealtimePostgresChangesPayload<ChatMessage>) => {
         console.log('[useRealtimeMessages] Event received:', payload.eventType);
         
         if (payload.eventType === 'INSERT') {

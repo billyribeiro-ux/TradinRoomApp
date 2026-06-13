@@ -6,6 +6,7 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
 import { themeRepository } from '../repositories/themeRepository';
+import type { Json } from '../types/database.types';
 
 import { useAuthStore } from './authStore';
 // Emergency fix: Define missing types locally
@@ -241,7 +242,7 @@ export const useThemeStore = create<ThemeState>()(
           // Update existing theme
           const updated = await themeRepository.updateTheme(existing.id, {
             name: themeName,
-            theme_json: themeJson as any,
+            theme_json: themeJson as Json,
             description: `Theme updated at ${new Date().toLocaleString()}`
           });
 
@@ -254,7 +255,7 @@ export const useThemeStore = create<ThemeState>()(
             userId,
             name: themeName,
             description: `Theme created at ${new Date().toLocaleString()}`,
-            themeJson: themeJson as any
+            themeJson: themeJson as Json
           });
 
           if (import.meta.env.DEV) {

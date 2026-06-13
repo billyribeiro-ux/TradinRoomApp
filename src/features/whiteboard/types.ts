@@ -178,9 +178,8 @@ export interface TextShape extends WhiteboardShapeBase {
   text?: string;  // Alias for content
 }
 
-export interface TextAnnotation extends TextShape {
-  // Alias for compatibility
-}
+// Alias for compatibility
+export type TextAnnotation = TextShape;
 
 export interface EmojiObject extends WhiteboardShapeBase {
   type: 'emoji';
@@ -193,7 +192,7 @@ export interface EmojiObject extends WhiteboardShapeBase {
 }
 
 // Alias for compatibility
-export interface EmojiAnnotation extends EmojiObject {}
+export type EmojiAnnotation = EmojiObject;
 
 export interface StampShape extends WhiteboardShapeBase {
   type: 'stamp';
@@ -294,7 +293,7 @@ export type ToolType = WhiteboardTool; // Alias for backward compatibility
 export interface ToolState {
   type: ToolType;
   isActive: boolean;
-  options: Record<string, any>;
+  options: Record<string, unknown>;
 }
 
 // ============================================================================
@@ -305,7 +304,7 @@ export interface WhiteboardHistoryEntry {
   shapes: Map<string, WhiteboardShape>;
   timestamp: number;
   action: string;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 export interface HistoryEntry {
@@ -314,8 +313,8 @@ export interface HistoryEntry {
   timestamp: number;
   shapes: Map<string, WhiteboardShape>;
   viewport: ViewportState;
-  data?: any; // Additional data for the history entry
-  snapshot?: any; // Snapshot data for the history entry
+  data?: Record<string, unknown>; // Additional data for the history entry
+  snapshot?: Map<string, WhiteboardShape>; // Snapshot data for the history entry
   metadata?: {
     userId?: string;
     deviceId?: string;
@@ -396,8 +395,8 @@ export interface RenderContext {
 export interface WhiteboardEvent {
   type: string;
   timestamp: number;
-  data: any;
-  payload?: any; // Event payload for collaboration
+  data: unknown;
+  payload?: unknown; // Event payload for collaboration
   userId?: string; // User who triggered the event
   roomId?: string; // Room where event occurred
 }
@@ -419,9 +418,9 @@ export interface PointerEventData {
 // ============================================================================
 
 export interface TestingExports {
-  toolState: any;
-  metrics: any;
-  [key: string]: any;
+  toolState: ToolState;
+  metrics: PerformanceMetrics;
+  [key: string]: unknown;
 }
 
 // ============================================================================
@@ -527,7 +526,7 @@ export type Mutable<T> = {
 export function hasPoints(
   shape: WhiteboardShape
 ): shape is PenAnnotation | HighlighterAnnotation | EraserAnnotation | ShapeObject {
-  return 'points' in shape && Array.isArray((shape as any).points);
+  return 'points' in shape && Array.isArray((shape as { points?: unknown }).points);
 }
 
 /**

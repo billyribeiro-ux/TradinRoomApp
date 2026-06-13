@@ -79,7 +79,7 @@ async function testAuthFunctions() {
 
   // Test 3: Session refresh capability
   await runTest('Session Refresh Capability', async () => {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       console.log('   No session to refresh (OK for unauthenticated state)');
       return;
@@ -138,7 +138,7 @@ async function testDatabaseFunctions() {
 
   // Test 3: Check RLS policies
   await runTest('Check RLS Policies', async () => {
-    const { data, error } = await supabase.rpc('get_current_user_id').catch(e => ({ error: e }));
+    const { error } = await supabase.rpc('get_current_user_id').catch(e => ({ error: e }));
     if (error) {
       if (error.message?.includes('function') || error.message?.includes('does not exist')) {
         console.log('   RLS function not available (OK)');
@@ -256,7 +256,7 @@ async function testTypeSystem() {
   // Test 1: TypeScript compilation check
   await runTest('TypeScript Compilation', async () => {
     try {
-      const { stdout, stderr } = await execPromise('npx tsc --noEmit 2>&1 | grep "error TS" | wc -l');
+      const { stdout } = await execPromise('npx tsc --noEmit 2>&1 | grep "error TS" | wc -l');
       const errorCount = parseInt(stdout.trim());
       console.log(`   TypeScript errors: ${errorCount}`);
       
@@ -277,7 +277,7 @@ async function testTypeSystem() {
   await runTest('Build Process', async () => {
     console.log('   Running build (this may take a moment)...');
     try {
-      const { stdout, stderr } = await execPromise('npm run build 2>&1 | tail -5');
+      const { stderr } = await execPromise('npm run build 2>&1 | tail -5');
       if (stderr && stderr.includes('error')) {
         throw new Error('Build failed with errors');
       }

@@ -9,36 +9,36 @@ const isDevelopment = import.meta.env.DEV;
 const isTest = import.meta.env.MODE === 'test';
 
 export const logger = {
-  log: (...args: any[]) => {
+  log: (...args: unknown[]) => {
     if (isDevelopment || isTest) {
       console.log(...args);
     }
   },
-  
-  error: (...args: any[]) => {
+
+  error: (...args: unknown[]) => {
     // Always log errors
     console.error(...args);
   },
-  
-  warn: (...args: any[]) => {
+
+  warn: (...args: unknown[]) => {
     if (isDevelopment || isTest) {
       console.warn(...args);
     }
   },
-  
-  debug: (...args: any[]) => {
+
+  debug: (...args: unknown[]) => {
     if (isDevelopment) {
       console.debug(...args);
     }
   },
-  
-  info: (...args: any[]) => {
+
+  info: (...args: unknown[]) => {
     if (isDevelopment || isTest) {
       console.info(...args);
     }
   },
-  
-  table: (data: any) => {
+
+  table: (data: unknown) => {
     if (isDevelopment) {
       console.table(data);
     }

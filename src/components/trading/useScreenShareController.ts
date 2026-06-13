@@ -5,6 +5,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { Track } from 'livekit-client';
 
 import { liveKitService } from '../../services/livekit';
 import { useToastStore } from '../../store/toastStore';
@@ -40,18 +41,32 @@ export function useScreenShareController(): UseScreenShareControllerReturn {
 
       screenStream.current = stream;
       
-      // Publish to LiveKit
+      // Publish to LiveKit using the proper ScreenShare source so remote peers
+      // can identify and lay out the share correctly (Zoom-style).
       const room = liveKitService.getRoom();
       if (room) {
         const videoTrack = stream.getVideoTracks()[0];
         if (videoTrack) {
+          // Hint the encoder to preserve text/detail over smoothness — the same
+          // trade-off Zoom makes for shared documents and slides.
+          try { videoTrack.contentHint = 'detail'; } catch { /* not supported */ }
           await room.localParticipant.publishTrack(videoTrack, {
             name: 'screen_share',
-            // @ts-expect-error - screen_share is a valid source but not in the type definition
-            source: 'screen_share',
+            source: Track.Source.ScreenShare,
           });
           trackPublished.current = true;
-          console.log('[ScreenShare] Track published to LiveKit');
+          console.log('[ScreenShare] Video track published to LiveKit');
+        }
+
+        // Publish captured tab/system audio as a distinct ScreenShareAudio
+        // source so participants hear the shared content (Zoom parity).
+        const audioTrack = stream.getAudioTracks()[0];
+        if (audioTrack) {
+          await room.localParticipant.publishTrack(audioTrack, {
+            name: 'screen_share_audio',
+            source: Track.Source.ScreenShareAudio,
+          });
+          console.log('[ScreenShare] Audio track published to LiveKit');
         }
       }
 
@@ -84,16 +99,19 @@ export function useScreenShareController(): UseScreenShareControllerReturn {
     try {
       console.log('[ScreenShare] Stopping screen share...');
 
-      // Unpublish from LiveKit
+      // Unpublish from LiveKit (both the screen video and its audio source)
       if (trackPublished.current) {
         const room = liveKitService.getRoom();
         if (room) {
           const publications = Array.from(room.localParticipant.trackPublications.values());
-          const screenTrack = publications.find((pub) => (pub as unknown as Record<string, unknown>).trackName === 'screen_share');
-          
-          if (screenTrack?.track) {
-            await room.localParticipant.unpublishTrack(screenTrack.track);
-            console.log('[ScreenShare] Track unpublished from LiveKit');
+          const screenPubs = publications.filter(
+            (pub) => pub.source === Track.Source.ScreenShare || pub.source === Track.Source.ScreenShareAudio
+          );
+          for (const pub of screenPubs) {
+            if (pub.track) {
+              await room.localParticipant.unpublishTrack(pub.track);
+              console.log('[ScreenShare] Track unpublished from LiveKit:', pub.source);
+            }
           }
         }
         trackPublished.current = false;
@@ -144,15 +162,18 @@ export function useScreenShareController(): UseScreenShareControllerReturn {
       screenStream.current = null;
     }
 
-    // Unpublish from LiveKit
+    // Unpublish from LiveKit (both the screen video and its audio source)
     if (trackPublished.current) {
       const room = liveKitService.getRoom();
       if (room) {
         const publications = Array.from(room.localParticipant.trackPublications.values());
-        const screenTrack = publications.find((pub) => (pub as unknown as Record<string, unknown>).trackName === 'screen_share');
-        
-        if (screenTrack?.track) {
-          room.localParticipant.unpublishTrack(screenTrack.track).catch(console.error);
+        const screenPubs = publications.filter(
+          (pub) => pub.source === Track.Source.ScreenShare || pub.source === Track.Source.ScreenShareAudio
+        );
+        for (const pub of screenPubs) {
+          if (pub.track) {
+            room.localParticipant.unpublishTrack(pub.track).catch(console.error);
+          }
         }
       }
       trackPublished.current = false;

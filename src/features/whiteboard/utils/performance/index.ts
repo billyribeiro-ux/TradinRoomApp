@@ -24,7 +24,7 @@ export function pointerBatcher<T>(callback: (batch: T[]) => void, batchSize: num
     if (rafId !== null) return;
     scheduledFn = fn;
     rafId = window.requestAnimationFrame(() => {
-      scheduledFn && scheduledFn();
+      if (scheduledFn) scheduledFn();
       rafId = null;
       scheduledFn = null;
     });
@@ -47,10 +47,10 @@ export function pointerBatcher<T>(callback: (batch: T[]) => void, batchSize: num
  * viewportCache - Caches getBoundingClientRect and viewportState per canvas/viewport.
  * Usage: const cache = viewportCache(); cache.get(canvas, viewport)
  */
-export function viewportCache() {
-  let cache = new WeakMap<HTMLElement, { rect: DOMRect; viewportState: any }>();
+export function viewportCache<V = unknown>() {
+  let cache = new WeakMap<HTMLElement, { rect: DOMRect; viewportState: V }>();
   return {
-    get(canvas: HTMLElement, viewportState: any) {
+    get(canvas: HTMLElement, viewportState: V) {
       let cached = cache.get(canvas);
       if (!cached || cached.viewportState !== viewportState) {
         const rect = canvas.getBoundingClientRect();

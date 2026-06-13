@@ -8,7 +8,7 @@
  * - Storage policies created for public read + authenticated write/delete
  * - chatmessages.body column verified/added for chat posting
  */
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '../types/database.types';
 
@@ -21,8 +21,8 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // Allow E2E test routes to run without real Supabase env by providing a minimal mock client
 const isE2ERoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/__test_');
 
-function createMockSupabase(): any {
-  const ok = async (data: any = {}) => ({ data, error: null });
+function createMockSupabase(): SupabaseClient {
+  const ok = async (data: unknown = {}) => ({ data, error: null });
   const okVoid = async () => ({ error: null });
   const tableOps = {
     delete: () => ({ eq: () => ok() }),
@@ -40,7 +40,9 @@ function createMockSupabase(): any {
     },
     from: () => tableOps,
     removeChannel: () => {},
-  };
+    // Cast required: this E2E stub only implements the handful of client
+    // methods the test routes touch, not the full SupabaseClient surface.
+  } as unknown as SupabaseClient;
 }
 
 // If env is missing but we're on an E2E test route, use mock; otherwise enforce env
@@ -51,7 +53,15 @@ if ((!supabaseUrl || !supabaseAnonKey) && !isE2ERoute) {
 // ============================================================================
 // SUPABASE CLIENT CONFIGURATION - Microsoft Standards
 // ============================================================================
-export const supabase: any = isE2ERoute
+// NOTE: typed as the generic `SupabaseClient` (not `SupabaseClient<Database>`).
+// The checked-in generated `Database` types are incomplete relative to the live
+// schema (several tables the app queries — e.g. moderation/ban tables — are not
+// present), so binding the strict generic would fail compilation against valid
+// runtime queries. Using the un-parameterised client keeps strong typing on the
+// client surface itself while leaving table/row access permissive, matching the
+// app's existing dynamic query usage. Regenerating `database.types.ts` from the
+// live project would let us reinstate `<Database>` here.
+export const supabase: SupabaseClient = isE2ERoute
   ? createMockSupabase()
   : createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {

@@ -33,7 +33,7 @@ export async function getUserCount(): Promise<UserCount> {
       };
     }
     
-    const counts = data.reduce((acc: any, user: any) => {
+    const counts = data.reduce((acc: UserCount, user: { role: string | null }) => {
       acc.total++;
       acc[user.role as keyof Omit<UserCount, 'total'>]++;
       return acc;
