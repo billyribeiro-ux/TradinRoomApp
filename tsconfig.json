@@ -33,8 +33,13 @@
     "exactOptionalPropertyTypes": false,
     "noPropertyAccessFromIndexSignature": false,
     
-    /* Path mapping */
-    "baseUrl": ".",
+    /* Ambient type packages with global declarations. Pinned explicitly because
+       TS 6 no longer auto-includes every @types package; this keeps Node globals
+       (process, NodeJS.*, Error.captureStackTrace) and Vite's import.meta.env
+       available to application code. */
+    "types": ["node", "vite/client"],
+
+    /* Path mapping (TS 6: paths resolve relative to this config; baseUrl removed) */
     "paths": {
       "@/*": ["./src/*"]
     }
@@ -49,7 +54,10 @@
     "dist",
     "build",
     "src/test-utils/**/*",
+    "src/setupTests.ts",
     "**/*.spec.ts",
-    "**/*.test.ts"
+    "**/*.spec.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

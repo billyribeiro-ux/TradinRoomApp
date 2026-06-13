@@ -14,7 +14,6 @@ import { pointerBatcher, viewportCache, toViewportState } from '../../../utils/p
 import type {
   ViewportTransform,
   WhiteboardPoint,
-  WhiteboardAnnotation,
 } from '../types';
 
 const __BROWSER__ = typeof window !== 'undefined' && typeof document !== 'undefined';

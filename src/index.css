@@ -7,9 +7,11 @@
   postcss pipeline expects them when encountering `@layer components`.
   ---------------------------------------------------------------------- */
 /* stylelint-disable at-rule-no-unknown */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind CSS v4: a single import replaces the legacy base/components/utilities
+   directives. The existing JS theme (custom colors, animations, keyframes) is
+   loaded via @config so the established design tokens are preserved 1:1. */
+@import 'tailwindcss';
+@config '../tailwind.config.js';
 /* stylelint-enable at-rule-no-unknown */
 
 /* ============================================================

@@ -45,17 +45,6 @@ async function fixRealtimeConfig() {
   const realtimePath = path.join(__dirname, 'src/services/realtime.ts');
   const realtimeContent = await fs.readFile(realtimePath, 'utf-8');
   
-  // Add timeout handling
-  const improvedSubscribe = `
-  // Improved subscription with timeout handling
-  const channel = supabase
-    .channel(channelName, {
-      config: {
-        presence: { key: roomId },
-        broadcast: { self: true }
-      }
-    })`;
-  
   if (!realtimeContent.includes('config: {')) {
     console.log('   ⚠️  Adding improved timeout handling to realtime service');
     // Would update the file here

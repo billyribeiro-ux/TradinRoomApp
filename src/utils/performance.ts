@@ -146,38 +146,81 @@ export function toViewportState(
 // PATH SIMPLIFICATION UTILITIES
 // =============================================================================
 
-/**
- * simplifyPoints - Ramer-Douglas-Peucker algorithm for path simplification
- */
-export function simplifyPoints(points: Array<{ x: number; y: number }>, tolerance: number = 1.5): Array<{ x: number; y: number }> {
-  if (points.length < 3) return points;
-  const sqTolerance = tolerance * tolerance;
+type Point2D = { x: number; y: number };
 
-  function getSqDist(p1: { x: number; y: number }, p2: { x: number; y: number }) {
-    const dx = p1.x - p2.x, dy = p1.y - p2.y;
-    return dx * dx + dy * dy;
+/**
+ * Squared perpendicular distance from point `p` to the segment `[a, b]`.
+ * This is the metric the Ramer–Douglas–Peucker algorithm actually requires;
+ * the previous implementation summed the distances to the two endpoints, which
+ * is not the perpendicular distance and caused the routine to (a) almost never
+ * simplify and (b) recurse to a depth of O(n), overflowing the stack on large
+ * paths. Clamping `t` to [0, 1] also handles degenerate (zero-length) segments.
+ */
+function getSqSegDist(p: Point2D, a: Point2D, b: Point2D): number {
+  let x = a.x;
+  let y = a.y;
+  let dx = b.x - x;
+  let dy = b.y - y;
+
+  if (dx !== 0 || dy !== 0) {
+    const t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy);
+    if (t > 1) {
+      x = b.x;
+      y = b.y;
+    } else if (t > 0) {
+      x += dx * t;
+      y += dy * t;
+    }
   }
 
-  function simplifyDPStep(pts: Array<{ x: number; y: number }>, first: number, last: number, simplified: Array<{ x: number; y: number }>) {
-    let maxDist = sqTolerance, index = -1;
+  dx = p.x - x;
+  dy = p.y - y;
+  return dx * dx + dy * dy;
+}
+
+/**
+ * simplifyPoints - Ramer–Douglas–Peucker path simplification.
+ *
+ * Iterative (explicit-stack) implementation so it stays O(1) in call-stack
+ * depth and never overflows, even for paths with tens of thousands of points.
+ * The first and last points are always preserved.
+ */
+export function simplifyPoints(points: Point2D[], tolerance = 1.5): Point2D[] {
+  const len = points.length;
+  if (len < 3) return points.slice();
+
+  const sqTolerance = tolerance * tolerance;
+  const keep = new Uint8Array(len);
+  keep[0] = 1;
+  keep[len - 1] = 1;
+
+  // Each entry on the stack is a [first, last] index pair to subdivide.
+  const stack: number[] = [0, len - 1];
+
+  while (stack.length > 0) {
+    const last = stack.pop() as number;
+    const first = stack.pop() as number;
+
+    let maxSqDist = sqTolerance;
+    let index = -1;
     for (let i = first + 1; i < last; i++) {
-      const dist = getSqDist(pts[i], pts[first]) + getSqDist(pts[i], pts[last]);
-      if (dist > maxDist) {
+      const sqDist = getSqSegDist(points[i], points[first], points[last]);
+      if (sqDist > maxSqDist) {
         index = i;
-        maxDist = dist;
+        maxSqDist = sqDist;
       }
     }
+
     if (index !== -1) {
-      simplifyDPStep(pts, first, index, simplified);
-      simplifyDPStep(pts, index, last, simplified);
-    } else {
-      simplified.push(pts[first]);
+      keep[index] = 1;
+      stack.push(first, index, index, last);
     }
   }
 
-  const simplified: Array<{ x: number; y: number }> = [];
-  simplifyDPStep(points, 0, points.length - 1, simplified);
-  simplified.push(points[points.length - 1]);
+  const simplified: Point2D[] = [];
+  for (let i = 0; i < len; i++) {
+    if (keep[i]) simplified.push(points[i]);
+  }
   return simplified;
 }
 

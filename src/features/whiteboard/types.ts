@@ -178,9 +178,8 @@ export interface TextShape extends WhiteboardShapeBase {
   text?: string;  // Alias for content
 }
 
-export interface TextAnnotation extends TextShape {
-  // Alias for compatibility
-}
+// Alias for compatibility
+export type TextAnnotation = TextShape;
 
 export interface EmojiObject extends WhiteboardShapeBase {
   type: 'emoji';
@@ -193,7 +192,7 @@ export interface EmojiObject extends WhiteboardShapeBase {
 }
 
 // Alias for compatibility
-export interface EmojiAnnotation extends EmojiObject {}
+export type EmojiAnnotation = EmojiObject;
 
 export interface StampShape extends WhiteboardShapeBase {
   type: 'stamp';

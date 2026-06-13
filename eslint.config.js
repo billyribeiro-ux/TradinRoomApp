@@ -40,7 +40,15 @@ export default [
       // Script utilities often log intentionally
       'no-console': 'off',
       // Allow CommonJS in .js files (require/module)
-      'no-undef': 'off'
+      'no-undef': 'off',
+      // Mirror the application convention: ignore intentionally-unused caught
+      // errors and `_`-prefixed bindings so diagnostic scripts stay clean.
+      'no-unused-vars': ['error', {
+        args: 'none',
+        caughtErrors: 'none',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }]
     }
   },
   ...tseslint.config({

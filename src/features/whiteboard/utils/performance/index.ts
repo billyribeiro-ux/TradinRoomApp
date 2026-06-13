@@ -24,7 +24,7 @@ export function pointerBatcher<T>(callback: (batch: T[]) => void, batchSize: num
     if (rafId !== null) return;
     scheduledFn = fn;
     rafId = window.requestAnimationFrame(() => {
-      scheduledFn && scheduledFn();
+      if (scheduledFn) scheduledFn();
       rafId = null;
       scheduledFn = null;
     });

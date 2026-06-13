@@ -16,7 +16,6 @@ import {
   getRoomMessages,
   getRoomAlerts,
   getActiveMediaTracks,
-  ensureUserRoomMembership,
 } from '../../services/api';
 import { audioService } from '../../services/audioService';
 import { cameraService } from '../../services/cameraService';

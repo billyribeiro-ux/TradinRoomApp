@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase } from '../lib/supabase';
 
 interface Integration {
   id: string;
@@ -31,7 +32,6 @@ export const useIntegrationStore = create<IntegrationState>()(
       loadConnections: async (userId: string) => {
         set({ isLoading: true });
         try {
-          const { supabase } = await import('../lib/supabase');
           const { data, error } = await supabase
             .from('user_integrations')
             .select('*')
