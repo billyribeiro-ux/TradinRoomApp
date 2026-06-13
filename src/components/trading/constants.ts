@@ -52,8 +52,14 @@ export const MEDIA_CONSTRAINTS = {
     video: {
       cursor: 'always' as const,
       displaySurface: 'monitor' as const,
+      // Zoom-parity: request up to 1080p30 for legible shared content.
+      width: { ideal: 1920, max: 1920 },
+      height: { ideal: 1080, max: 1080 },
+      frameRate: { ideal: 30, max: 30 },
     },
-    audio: false,
+    // Zoom-parity: capture tab/system audio alongside the screen. Browsers that
+    // cannot provide it simply yield a stream with no audio track (handled).
+    audio: true,
   },
 } as const;
 

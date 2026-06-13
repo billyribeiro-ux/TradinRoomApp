@@ -127,12 +127,34 @@ cleanly end-to-end after these changes.
 - Cleared the remaining style warnings (`consistent-type-imports`,
   `consistent-type-definitions`). `npm run lint` is now **0 errors, 0 warnings**.
 
+### Screen Share & Drawing audit (vs Zoom)
+
+- Added `docs/SCREENSHARE_AND_DRAWING_AUDIT.md` — a full end-to-end trace and
+  Zoom-parity assessment of both subsystems.
+- **Screen share (capture/publish, Zoom-parity):** `useScreenShareController` now
+  captures tab/system **audio** and publishes it as `Track.Source.ScreenShareAudio`
+  (previously dropped), sets `contentHint: 'detail'` for legible shared text, uses the
+  proper `Track.Source.ScreenShare` enum (removing a `@ts-expect-error` string hack),
+  requests 1080p30, and unpublishes both the video and audio sources on stop/cleanup.
+- **Screen share (documented architectural gap):** cross-participant viewing is not
+  wired — `rtcClient` is a `NoopClient` (never bound to LiveKit) and the
+  `TrackSubscribed` handler is a no-op, so remote peers never render a share. The audit
+  documents the concrete fix (bind `createLiveKitRtcClient`, render subscribed
+  `ScreenShare` tracks, consolidate the two share systems); it requires a live LiveKit
+  backend + a second client to verify and was therefore not changed blind.
+- **Drawing:** verified end-to-end with Playwright + Chromium against
+  `/__test_whiteboard` — core tools (create/switch/text/store updates) work. The
+  toolset (pen, highlighter, eraser, line, rect, circle, text, emoji/stamp, select,
+  laser) meets or exceeds Zoom's annotation set. Three E2E specs have pre-existing
+  failing **soft** assertions on unwired debug telemetry (not functional bugs).
+
 ### Verification
 
 - `npm run typecheck` — 0 errors.
 - `npm run lint` — **0 errors, 0 warnings**.
 - `npm run test:unit` — 64/64 passing.
 - `npm run build` — succeeds.
+- `npm run test:e2e` (whiteboard, Chromium) — core drawing flows pass; see audit doc.
 
 > **Environment note:** this work was performed in a sandbox running Node
 > `v22.22.2`; `engines.node` is pinned to `24.16.0` as requested. End-to-end
