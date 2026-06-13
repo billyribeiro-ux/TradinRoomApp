@@ -53,7 +53,7 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     
     // Verify pixels were drawn
     const coloredPixels = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       if (!canvas) return 0;
       const ctx = canvas.getContext('2d');
       if (!ctx) return 0;
@@ -116,7 +116,7 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     
     // Verify thick stroke (highlighter should be 4x thicker)
     const coloredPixels = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       if (!canvas) return 0;
       const ctx = canvas.getContext('2d');
       if (!ctx) return 0;
@@ -426,7 +426,7 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     console.log('Testing DPR Support...');
     
     const dprInfo = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       if (!canvas) return null;
       
       const dpr = window.devicePixelRatio || 1;
@@ -549,7 +549,7 @@ test.describe('WhiteboardCanvasPro - Integration Tests', () => {
     console.log('Testing canvas resize...');
     
     const initialSize = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       return canvas ? { width: canvas.width, height: canvas.height } : null;
     });
     
@@ -560,7 +560,7 @@ test.describe('WhiteboardCanvasPro - Integration Tests', () => {
     await page.waitForTimeout(500);
     
     const resizedSize = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       return canvas ? { width: canvas.width, height: canvas.height } : null;
     });
     

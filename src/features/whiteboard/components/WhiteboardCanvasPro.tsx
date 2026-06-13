@@ -1129,10 +1129,13 @@ export function WhiteboardCanvasPro({
         className="absolute inset-0 w-full h-full pointer-events-none"
       />
       
-      {/* Shapes Layer */}
+      {/* Shapes Layer — committed strokes/shapes render here. Exposed via a
+          testid so E2E can assert pixels on the layer that actually paints
+          content (the interaction layer below carries `whiteboard-canvas`). */}
       <canvas
         ref={shapesCanvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
+        data-testid="whiteboard-shapes-canvas"
       />
       
       {/* Preview Layer */}
