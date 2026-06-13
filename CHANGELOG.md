@@ -172,13 +172,19 @@ cleanly end-to-end after these changes.
   eraser, line, rectangle, circle, arrow, text, emoji, undo/redo, DPR, clear-all,
   multi-text, resize). Login/Supabase-gated specs still require a live backend.
 
-### Verification
+### App-wide E2E coverage & snapshots
 
-- `npm run typecheck` — 0 errors.
-- `npm run lint` — **0 errors, 0 warnings**.
-- `npm run test:unit` — 64/64 passing.
-- `npm run build` — succeeds.
-- `npm run test:e2e` (whiteboard, Chromium) — **26/26 passing**.
+- Added `tests/e2e/app-snapshots.spec.ts` capturing the non-whiteboard surfaces:
+  auth screen, rich-text **notes editor**, and the **trading-room shell** (video
+  stage, alerts, chat, mic, theme) including the screenshare-on state.
+- **50 backend-independent E2E tests pass** (Chromium): whiteboard (26), notes
+  editor + rename/bidi, trading-room shell (boot, mic-muted, screenshare
+  lifecycle, chat send, alerts stability, participants, no memory leaks), app
+  boot/navigation/responsive, and the snapshot specs.
+- Snapshots written to `docs/snapshots/` (00–13).
+- Specs that exercise real auth/login (`auth-enterprise-validation`,
+  `branding-smoke`, `whiteboard.spec.ts`) still require a live Supabase backend
+  and are not runnable in a backend-less sandbox.
 
 > **Environment note:** this work was performed in a sandbox running Node
 > `v22.22.2`; `engines.node` is pinned to `24.16.0` as requested. End-to-end
