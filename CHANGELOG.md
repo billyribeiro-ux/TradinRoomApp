@@ -158,6 +158,9 @@ cleanly end-to-end after these changes.
 - **Emoji tool was inert** (real bug): the toolbar mapped the Emoji button to the
   `'stamp'` tool, but the canvas only handles `'emoji'`, so the picker never opened.
   Aligned the button to the `'emoji'` tool.
+- **Default ink color** changed from black (`#000000`) to white (`#FFFFFF`) — the
+  whiteboard canvas is dark, so the previous default produced invisible strokes
+  until the user manually picked a colour. Applies to the initial state and `reset()`.
 - Exposed `data-testid="whiteboard-shapes-canvas"` on the shapes render layer so
   pixel-level rendering can be asserted (the interaction layer carries
   `whiteboard-canvas`).

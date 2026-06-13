@@ -99,4 +99,28 @@ test.describe('Whiteboard tool snapshots', () => {
     await page.waitForTimeout(200);
     await page.screenshot({ path: path.join(OUT, '07-all-tools.png') });
   });
+
+  test('default ink color is visible on the dark board', async ({ page }) => {
+    await page.goto('/__test_whiteboard');
+    await page.locator('[data-testid="whiteboard-canvas"]').waitFor({ state: 'attached', timeout: 15000 });
+    await page.waitForTimeout(600);
+
+    const box = (await page.locator('[data-testid="whiteboard-canvas"]').boundingBox())!;
+    const at = (fx: number, fy: number) => ({ x: box.x + box.width * fx, y: box.y + box.height * fy });
+
+    // Draw with the DEFAULT pen color (no setColor call). It should be visible
+    // (white) on the dark canvas now that the default is no longer black.
+    await page.locator('[data-testid="tool-pen"]').click();
+    const pts: Array<[number, number]> = [[0.40, 0.35], [0.48, 0.30], [0.56, 0.40], [0.64, 0.30], [0.72, 0.38]];
+    const p0 = at(pts[0][0], pts[0][1]);
+    await page.mouse.move(p0.x, p0.y);
+    await page.mouse.down();
+    for (let i = 1; i < pts.length; i++) {
+      const p = at(pts[i][0], pts[i][1]);
+      await page.mouse.move(p.x, p.y, { steps: 8 });
+    }
+    await page.mouse.up();
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: path.join(OUT, '00-default-ink-visible.png') });
+  });
 });

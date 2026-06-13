@@ -61,21 +61,15 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
       const { width, height } = canvas;
       const image = ctx.getImageData(0, 0, width, height);
       let count = 0;
-      
-      for (let i = 0; i < image.data.length; i += 4) {
-        const r = image.data[i];
-        const g = image.data[i + 1];
-        const b = image.data[i + 2];
-        const a = image.data[i + 3];
-        
-        // Count non-white pixels
-        if (a > 0 && !(r > 240 && g > 240 && b > 240)) {
-          count++;
-        }
+
+      // Count any drawn (non-transparent) pixel — the shapes layer is otherwise
+      // transparent, so this is color-agnostic.
+      for (let i = 3; i < image.data.length; i += 4) {
+        if (image.data[i] > 0) count++;
       }
       return count;
     });
-    
+
     expect(coloredPixels).toBeGreaterThan(500);
     console.log('✓ Pen tool working - drew stroke with', coloredPixels, 'pixels');
   });

@@ -74,13 +74,10 @@ test.describe('Whiteboard core tools', () => {
       const yStart = Math.floor(height / 2 - stripHeight / 2);
       const image = ctx.getImageData(0, yStart, width, stripHeight);
       let count = 0;
-      for (let i = 0; i < image.data.length; i += 4) {
-        const r = image.data[i];
-        const g = image.data[i + 1];
-        const b = image.data[i + 2];
-        const a = image.data[i + 3];
+      for (let i = 3; i < image.data.length; i += 4) {
+        const a = image.data[i];
         // Count non-white-ish and non-transparent pixels
-        if (a > 0 && !(r > 240 && g > 240 && b > 240)) count++;
+        if (a > 0) count++;
       }
       return count;
     });
@@ -118,12 +115,9 @@ test.describe('Whiteboard core tools', () => {
       const yStart = Math.floor(height / 2 - 40 - stripHeight / 2);
       const image = ctx.getImageData(0, yStart, width, stripHeight);
       let count = 0;
-      for (let i = 0; i < image.data.length; i += 4) {
-        const r = image.data[i];
-        const g = image.data[i + 1];
-        const b = image.data[i + 2];
-        const a = image.data[i + 3];
-        if (a > 0 && !(r > 240 && g > 240 && b > 240)) count++;
+      for (let i = 3; i < image.data.length; i += 4) {
+        const a = image.data[i];
+        if (a > 0) count++;
       }
       return count;
     });
