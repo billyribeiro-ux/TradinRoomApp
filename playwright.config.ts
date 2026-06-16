@@ -7,7 +7,34 @@ dotenv.config({ path: '.env.test' });
 /**
  * Microsoft Enterprise-Grade E2E Configuration
  * @see https://playwright.dev/docs/test-configuration
+ *
+ * Browser selection is env-driven so the suite runs cleanly in environments
+ * where only Chromium is installed (the default). To run more browsers:
+ *   PW_BROWSERS=chromium,firefox,webkit npx playwright test
  */
+const REQUESTED_BROWSERS = (process.env.PW_BROWSERS || 'chromium')
+  .split(',')
+  .map((b) => b.trim())
+  .filter(Boolean);
+
+const ALL_PROJECTS = [
+  {
+    name: 'chromium',
+    use: {
+      ...devices['Desktop Chrome'],
+      permissions: ['camera', 'microphone'] as ('camera' | 'microphone')[],
+    },
+  },
+  {
+    name: 'firefox',
+    use: { ...devices['Desktop Firefox'] },
+  },
+  {
+    name: 'webkit',
+    use: { ...devices['Desktop Safari'] },
+  },
+];
+
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 30000,
@@ -47,58 +74,12 @@ export default defineConfig({
       ],
     },
 
-    /* Grant permissions - only for Chromium, overridden per project */
-
     /* Viewport */
     viewport: { width: 1920, height: 1080 },
   },
 
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        permissions: ['camera', 'microphone'],
-      },
-    },
-
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        // Firefox doesn't support camera/microphone permissions in Playwright
-      },
-    },
-
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        // WebKit doesn't support camera/microphone permissions in Playwright
-      },
-    },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
+  /* Only configure the browsers that were requested (and are installed). */
+  projects: ALL_PROJECTS.filter((p) => REQUESTED_BROWSERS.includes(p.name)),
 
   /* Run your local dev server before starting the tests */
   webServer: {

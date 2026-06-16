@@ -56,7 +56,7 @@ const TOOLS: Array<ToolConfig> = [
   { tool: 'circle',      icon: faCircle,       label: 'Circle (C)',    testId: 'tool-circle' },
   { tool: 'arrow',       icon: faArrowRight,   label: 'Arrow (A)',     testId: 'tool-arrow' },
   { tool: 'text',        icon: faFont,         label: 'Text (T)',      testId: 'tool-text' },
-  { tool: 'stamp',       icon: faSmile,        label: 'Emoji',         testId: 'tool-emoji' },
+  { tool: 'emoji',       icon: faSmile,        label: 'Emoji',         testId: 'tool-emoji' },
 ];
 
 const COLORS = [
@@ -122,7 +122,7 @@ export function WhiteboardToolbar({ onClose, canManageRoom }: WhiteboardToolbarP
         t.tool === 'circle'      ? (m.Circle24Regular || m.Circle20Regular) :
         t.tool === 'arrow'       ? (m.ArrowRight24Regular || m.ArrowRight20Regular) :
         t.tool === 'text'        ? (m.TextT24Regular || m.TextT20Regular) :
-        t.tool === 'stamp'       ? (m.EmojiSmileSlight24Regular || m.Emoji24Regular || m.Emoji20Regular) :
+        t.tool === 'emoji'       ? (m.EmojiSmileSlight24Regular || m.Emoji24Regular || m.Emoji20Regular) :
         null;
 
       if (pick) {

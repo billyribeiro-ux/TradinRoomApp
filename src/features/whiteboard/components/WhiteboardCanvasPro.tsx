@@ -10,10 +10,7 @@ import { useWhiteboardStore } from '../state/whiteboardStore';
 // Import tool handlers
 import {
   activateHighlighterTool,
-  deactivateHighlighterTool,
-  handleHighlighterPointerDown,
-  handleHighlighterPointerMove,
-  handleHighlighterPointerUp
+  deactivateHighlighterTool
 } from '../tools/HighlighterTool';
 
 import {
@@ -853,33 +850,30 @@ export function WhiteboardCanvasPro({
     
     // Delegate to tool handlers
     switch (tool) {
-      case 'highlighter':
-        if (handleHighlighterPointerDown(e.nativeEvent, canvas, viewportState)) {
-          e.preventDefault();
-          return;
-        }
-        break;
-        
       case 'text':
         if (handleTextPointerDown(e.nativeEvent, canvas, viewportState)) {
           e.preventDefault();
           return;
         }
         break;
-        
+
       case 'emoji':
         setEmojiPickerPosition(screenPos);
         setShowEmojiPicker(true);
         e.preventDefault();
         return;
-        
+
       case 'eraser':
         setIsErasing(true);
         eraseAtPosition(worldPos);
         e.preventDefault();
         return;
-        
+
+      // Freehand + shape tools share the unified drawing-state pipeline below.
+      // Highlighter is freehand like pen (the legacy standalone HighlighterTool
+      // produced null-coordinate points, so it never rendered).
       case 'pen':
+      case 'highlighter':
       case 'rectangle':
       case 'circle':
       case 'arrow':
@@ -916,22 +910,16 @@ export function WhiteboardCanvasPro({
     
     // Delegate to tool handlers
     switch (tool) {
-      case 'highlighter':
-        if (handleHighlighterPointerMove(e.nativeEvent, canvas, viewportState)) {
-          e.preventDefault();
-        }
-        break;
-        
       case 'text':
         if (handleTextPointerMove(e.nativeEvent, canvas, viewportState)) {
           e.preventDefault();
         }
         break;
     }
-    
+
     // Handle regular drawing
     if (drawingState.isDrawing) {
-      if (tool === 'pen') {
+      if (tool === 'pen' || tool === 'highlighter') {
         setDrawingState(prev => ({
           ...prev,
           currentPath: [...prev.currentPath, worldPos]
@@ -958,13 +946,6 @@ export function WhiteboardCanvasPro({
     
     // Delegate to tool handlers
     switch (tool) {
-      case 'highlighter':
-        if (handleHighlighterPointerUp(e.nativeEvent, canvas)) {
-          e.preventDefault();
-          return;
-        }
-        break;
-        
       case 'text':
         if (handleTextPointerUp(e.nativeEvent, canvas)) {
           e.preventDefault();
@@ -972,7 +953,7 @@ export function WhiteboardCanvasPro({
         }
         break;
     }
-    
+
     // Commit drawing
     if (drawingState.isDrawing) {
       commitDrawing();
@@ -1014,7 +995,40 @@ export function WhiteboardCanvasPro({
         addShape(penShape);
         break;
       }
-      
+
+      case 'highlighter': {
+        if (drawingState.currentPath.length < 2) return;
+        const hlColor = drawingState.color || '#FFFF00';
+        const highlighterShape: HighlighterAnnotation = {
+          id: `highlighter-${now}`,
+          type: 'highlighter',
+          points: drawingState.currentPath,
+          colorGradient: {
+            type: 'linear',
+            stops: [
+              { offset: 0, color: hlColor },
+              { offset: 1, color: hlColor },
+            ],
+          },
+          // Highlighters read as broad translucent strokes (Zoom-style).
+          thickness: Math.max(drawingState.size * 3, 12),
+          composite: 'multiply',
+          opacity: 0.4,
+          color: hlColor,
+          capStyle: 'round',
+          joinStyle: 'round',
+          x: drawingState.startPoint?.x || 0,
+          y: drawingState.startPoint?.y || 0,
+          scale: 1,
+          rotation: 0,
+          locked: false,
+          createdAt: now,
+          updatedAt: now,
+        };
+        addShape(highlighterShape);
+        break;
+      }
+
       case 'rectangle':
       case 'circle':
       case 'arrow':
@@ -1129,10 +1143,13 @@ export function WhiteboardCanvasPro({
         className="absolute inset-0 w-full h-full pointer-events-none"
       />
       
-      {/* Shapes Layer */}
+      {/* Shapes Layer — committed strokes/shapes render here. Exposed via a
+          testid so E2E can assert pixels on the layer that actually paints
+          content (the interaction layer below carries `whiteboard-canvas`). */}
       <canvas
         ref={shapesCanvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
+        data-testid="whiteboard-shapes-canvas"
       />
       
       {/* Preview Layer */}

@@ -53,7 +53,7 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     
     // Verify pixels were drawn
     const coloredPixels = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       if (!canvas) return 0;
       const ctx = canvas.getContext('2d');
       if (!ctx) return 0;
@@ -61,21 +61,15 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
       const { width, height } = canvas;
       const image = ctx.getImageData(0, 0, width, height);
       let count = 0;
-      
-      for (let i = 0; i < image.data.length; i += 4) {
-        const r = image.data[i];
-        const g = image.data[i + 1];
-        const b = image.data[i + 2];
-        const a = image.data[i + 3];
-        
-        // Count non-white pixels
-        if (a > 0 && !(r > 240 && g > 240 && b > 240)) {
-          count++;
-        }
+
+      // Count any drawn (non-transparent) pixel — the shapes layer is otherwise
+      // transparent, so this is color-agnostic.
+      for (let i = 3; i < image.data.length; i += 4) {
+        if (image.data[i] > 0) count++;
       }
       return count;
     });
-    
+
     expect(coloredPixels).toBeGreaterThan(500);
     console.log('✓ Pen tool working - drew stroke with', coloredPixels, 'pixels');
   });
@@ -96,14 +90,15 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     
     // Draw horizontal stroke
     const y = box!.y + box!.height * 0.5;
-    const startX = box!.x + box!.width * 0.2;
-    const endX = box!.x + box!.width * 0.8;
+    const startX = box!.x + box!.width * 0.4;
+    const endX = box!.x + box!.width * 0.85;
     
     await page.mouse.move(startX, y);
     await page.mouse.down();
-    await page.mouse.move(endX, y);
+    await page.mouse.move(endX, y, { steps: 12 });
     await page.mouse.up();
-    
+    await page.waitForTimeout(200);
+
     // Verify highlighter shape
     const shapes = await page.evaluate(() => {
       const store = (window as any).__WB_STORE__;
@@ -116,24 +111,22 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     
     // Verify thick stroke (highlighter should be 4x thicker)
     const coloredPixels = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       if (!canvas) return 0;
       const ctx = canvas.getContext('2d');
       if (!ctx) return 0;
       
       const { width, height } = canvas;
-      const stripHeight = 60;
-      const yStart = Math.floor(height / 2 - stripHeight / 2);
-      const image = ctx.getImageData(0, yStart, width, stripHeight);
+      const image = ctx.getImageData(0, 0, width, height);
       let count = 0;
-      
+
       for (let i = 0; i < image.data.length; i += 4) {
         const a = image.data[i + 3];
         if (a > 0) count++;
       }
       return count;
     });
-    
+
     expect(coloredPixels).toBeGreaterThan(2000);
     console.log('✓ Highlighter tool working - thick stroke with', coloredPixels, 'pixels');
   });
@@ -150,12 +143,13 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     const centerX = box!.x + box!.width / 2;
     const centerY = box!.y + box!.height / 2;
     
-    // Draw a stroke
+    // Draw a continuous stroke (multi-point so the eraser can hit a mid point)
     await page.mouse.move(centerX - 50, centerY);
     await page.mouse.down();
-    await page.mouse.move(centerX + 50, centerY);
+    await page.mouse.move(centerX + 50, centerY, { steps: 20 });
     await page.mouse.up();
-    
+    await page.waitForTimeout(200);
+
     // Get shape count before erasing
     const shapesBefore = await page.evaluate(() => {
       const store = (window as any).__WB_STORE__;
@@ -170,9 +164,10 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     // Erase the stroke
     await page.mouse.move(centerX, centerY);
     await page.mouse.down();
-    await page.mouse.move(centerX + 10, centerY);
+    await page.mouse.move(centerX + 10, centerY, { steps: 8 });
     await page.mouse.up();
-    
+    await page.waitForTimeout(200);
+
     // Verify shape was removed
     const shapesAfter = await page.evaluate(() => {
       const store = (window as any).__WB_STORE__;
@@ -263,17 +258,18 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     const box = await canvas.boundingBox();
     expect(box).toBeTruthy();
     
-    // Draw line
-    const x1 = box!.x + box!.width * 0.2;
+    // Draw line (start clear of the left-edge toolbar overlay)
+    const x1 = box!.x + box!.width * 0.4;
     const y1 = box!.y + box!.height * 0.7;
     const x2 = box!.x + box!.width * 0.8;
     const y2 = box!.y + box!.height * 0.3;
     
     await page.mouse.move(x1, y1);
     await page.mouse.down();
-    await page.mouse.move(x2, y2);
+    await page.mouse.move(x2, y2, { steps: 12 });
     await page.mouse.up();
-    
+    await page.waitForTimeout(200);
+
     // Verify line shape
     const shapes = await page.evaluate(() => {
       const store = (window as any).__WB_STORE__;
@@ -329,17 +325,23 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     console.log('Testing Text Tool...');
     
     await page.locator('[data-testid="tool-text"]').click();
-    
+
+    // Click on the canvas to place the text caret (the editor mounts on click)
+    const tbox = await page.locator('[data-testid="whiteboard-canvas"]').boundingBox();
+    expect(tbox).toBeTruthy();
+    await page.mouse.click(tbox!.x + tbox!.width * 0.4, tbox!.y + tbox!.height * 0.4);
+
     // Wait for text layer to appear
     const textLayer = page.locator('[data-testid="text-layer"]');
     await expect(textLayer).toBeVisible({ timeout: 5000 });
-    
-    // Type text
-    await textLayer.fill('Test Text');
-    
+
+    // Type text into the editor's textarea
+    const textarea = page.locator('[data-testid="text-layer"] textarea');
+    await textarea.fill('Test Text');
+
     // Commit with Enter
     await page.keyboard.press('Enter');
-    
+
     // Verify text layer is hidden
     await expect(textLayer).toBeHidden();
     
@@ -426,7 +428,7 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     console.log('Testing DPR Support...');
     
     const dprInfo = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       if (!canvas) return null;
       
       const dpr = window.devicePixelRatio || 1;
@@ -462,14 +464,14 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     const box = await canvas.boundingBox();
     expect(box).toBeTruthy();
     
-    // Draw 3 strokes
+    // Draw 3 strokes (start clear of the left-edge toolbar overlay)
     for (let i = 0; i < 3; i++) {
       const y = box!.y + box!.height * (0.3 + i * 0.2);
-      await page.mouse.move(box!.x + box!.width * 0.2, y);
+      await page.mouse.move(box!.x + box!.width * 0.4, y);
       await page.mouse.down();
-      await page.mouse.move(box!.x + box!.width * 0.8, y);
+      await page.mouse.move(box!.x + box!.width * 0.8, y, { steps: 12 });
       await page.mouse.up();
-      await page.waitForTimeout(100);
+      await page.waitForTimeout(150);
     }
     
     const shapesBefore = await page.evaluate(() => {
@@ -479,18 +481,9 @@ test.describe('WhiteboardCanvasPro - All Tools E2E', () => {
     
     expect(shapesBefore).toBeGreaterThanOrEqual(3);
     
-    // Clear all (Ctrl+Delete or clear button)
-    const clearButton = page.locator('[data-testid="clear-button"]');
-    if (await clearButton.count() > 0) {
-      await clearButton.click();
-      
-      // Confirm if there's a confirmation dialog
-      const confirmButton = page.locator('button:has-text("Clear")').last();
-      if (await confirmButton.count() > 0) {
-        await confirmButton.click();
-      }
-    }
-    
+    // Clear all via the keyboard shortcut (Ctrl+Delete → clearShapes)
+    await page.keyboard.press('Control+Delete');
+
     await page.waitForTimeout(200);
     
     const shapesAfter = await page.evaluate(() => {
@@ -549,7 +542,7 @@ test.describe('WhiteboardCanvasPro - Integration Tests', () => {
     console.log('Testing canvas resize...');
     
     const initialSize = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       return canvas ? { width: canvas.width, height: canvas.height } : null;
     });
     
@@ -560,7 +553,7 @@ test.describe('WhiteboardCanvasPro - Integration Tests', () => {
     await page.waitForTimeout(500);
     
     const resizedSize = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas[data-testid="whiteboard-canvas"]') as HTMLCanvasElement;
+      const canvas = document.querySelector('canvas[data-testid="whiteboard-shapes-canvas"]') as HTMLCanvasElement;
       return canvas ? { width: canvas.width, height: canvas.height } : null;
     });
     

@@ -310,7 +310,9 @@ export const useWhiteboardStore = create<WhiteboardStore>()(
         
         // Tool State
         tool: 'pen',
-        color: '#000000',
+        // Default ink is white so strokes are visible immediately on the dark
+        // whiteboard canvas (black-on-dark was effectively invisible).
+        color: '#FFFFFF',
         size: 3,
         opacity: 1,
         
@@ -982,7 +984,7 @@ export const useWhiteboardStore = create<WhiteboardStore>()(
           set((state) => {
             Object.assign(state, {
               tool: 'pen',
-              color: '#000000',
+              color: '#FFFFFF',
               size: 3,
               opacity: 1,
               shapes: new Map(),

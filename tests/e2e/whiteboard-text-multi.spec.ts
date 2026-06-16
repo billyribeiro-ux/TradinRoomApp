@@ -14,8 +14,11 @@ test.describe('Whiteboard Text - multi create and edit', () => {
     // Select text tool
     await page.locator('[data-testid="tool-text"]').click();
 
-    // Initial centered editor appears; type first text and commit
-    const editor = page.locator('[data-testid="text-layer"]');
+    // Click the canvas to mount the editor, then type the first text and commit
+    const firstBox = await canvas.boundingBox();
+    expect(firstBox).toBeTruthy();
+    await page.mouse.click(firstBox!.x + firstBox!.width * 0.3, firstBox!.y + firstBox!.height * 0.25);
+    const editor = page.locator('[data-testid="text-layer"] textarea');
     await expect(editor).toBeVisible();
     await editor.fill('First');
     await page.keyboard.press('Enter');
@@ -28,7 +31,7 @@ test.describe('Whiteboard Text - multi create and edit', () => {
   const centerX = b.x + b.width * 0.35;
   const centerY = b.y + b.height * 0.4;
     await canvas.click({ position: { x: centerX - b.x, y: centerY - b.y } });
-    const editor2 = page.locator('[data-testid="text-layer"]');
+    const editor2 = page.locator('[data-testid="text-layer"] textarea');
     try {
       await expect(editor2).toBeVisible({ timeout: 5000 });
     } catch {
@@ -43,14 +46,14 @@ test.describe('Whiteboard Text - multi create and edit', () => {
   const p3x = b.x + b.width * 0.7;
   const p3y = b.y + b.height * 0.7;
   await canvas.click({ position: { x: p3x - b.x, y: p3y - b.y } });
-    const editor3 = page.locator('[data-testid="text-layer"]');
+    const editor3 = page.locator('[data-testid="text-layer"] textarea');
     await expect(editor3).toBeVisible();
     await editor3.fill('Third');
     await page.keyboard.press('Enter');
 
     // Double-click near the second text location to edit it
   await page.mouse.dblclick(centerX, centerY);
-    const editEditor = page.locator('[data-testid="text-layer"]');
+    const editEditor = page.locator('[data-testid="text-layer"] textarea');
     try {
       await expect(editEditor).toBeVisible({ timeout: 500 });
     } catch {
@@ -66,7 +69,7 @@ test.describe('Whiteboard Text - multi create and edit', () => {
       const store = (window as any).__WB_STORE__;
       if (!store) return [] as string[];
       const shapes: Map<string, any> = store.getState().shapes;
-      return Array.from(shapes.values()).filter((s: any) => s.type === 'text').map((s: any) => s.text as string);
+      return Array.from(shapes.values()).filter((s: any) => s.type === 'text').map((s: any) => (s.content ?? s.text) as string);
     });
     expect(texts.length).toBeGreaterThanOrEqual(3);
     expect(texts.join(' | ')).toContain('Second (edited)');
